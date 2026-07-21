@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propuesta de Tablero: Retail Media Funnel End-to-End</title>
+    <!-- Tailwind CSS para diseño moderno -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js para gráficos interactivos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Tailwind Config para colores personalizados -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .funnel-stage-container {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between" onload="switchTab('high')">
+
+    <!-- HEADER / CONTROL DE NAVEGACIÓN -->
+    <header class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col xl:flex-row justify-between items-center gap-4">
+            <div>
+                <span class="text-xs font-bold tracking-wider text-brand-600 uppercase">Retail Media Suite</span>
+                <h1 class="text-xl font-bold text-slate-900">Diseño de Tablero de Conversión (Funnel)</h1>
+            </div>
+            
+            <!-- Controles de Diapositivas / Tabs -->
+            <nav class="flex flex-wrap bg-slate-100 p-1 rounded-xl gap-1" id="nav-tabs">
+                <button onclick="switchTab('high')" id="btn-high" class="tab-btn px-3 py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 bg-white text-slate-900 shadow-sm">
+                    1. High Funnel
+                </button>
+                <button onclick="switchTab('mid')" id="btn-mid" class="tab-btn px-3 py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 text-slate-600 hover:text-slate-900">
+                    2. Mid Funnel
+                </button>
+                <button onclick="switchTab('low')" id="btn-low" class="tab-btn px-3 py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 text-slate-600 hover:text-slate-900">
+                    3. Low Funnel
+                </button>
+                <button onclick="switchTab('funnel-campaign')" id="btn-funnel-campaign" class="tab-btn px-3 py-2 rounded-lg text-xs md:text-sm font-semibold transition-all duration-200 text-brand-600 hover:text-brand-900 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-brand-500 animate-ping"></span>
+                    4. Funnel por Campaña
+                </button>
+                <button onclick="switchTab('timeseries')" id="btn-timeseries" class="tab-btn px-3 py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 text-slate-600 hover:text-slate-900">
+                    5. Series temporales
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="max-w-7xl mx-auto px-6 py-8 flex-grow w-full">
+
+        <!-- PANTALLA 1: HIGH FUNNEL (TRÁFICO EN SITIO & SEGMENTACIÓN) -->
+        <section id="slide-high" class="slide-content space-y-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">Pantalla 1: High Funnel (Tráfico en Sitio y Audiencias)</h2>
+                    <p class="text-slate-600 font-medium text-xs text-brand-600 uppercase tracking-wide">Paso 1 del Embudo de Conversión</p>
+                </div>
+                <div class="flex gap-2">
+                    <select class="bg-white border border-slate-200 text-sm rounded-lg px-3 py-2 shadow-sm focus:outline-none">
+                        <option>Últimos 30 días</option>
+                        <option>Este mes</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Gráfico de tendencia original y tabla original de EANs -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="font-semibold text-slate-800 mb-4">Tendencia de Sesiones vs. Usuarios Activos</h3>
+                    <div class="h-80">
+                        <canvas id="highFunnelChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Tabla Top EANs original -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-semibold text-slate-800 mb-2">Tráfico por Producto (Top EANs)</h3>
+                        <p class="text-xs text-slate-500 mb-4">Identifica qué productos atraen mayor interés orgánico inicial.</p>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead>
+                                    <tr class="text-slate-400 text-xs uppercase border-b border-slate-100">
+                                        <th class="pb-2 font-medium">EAN / Producto</th>
+                                        <th class="pb-2 font-medium text-right">Sesiones</th>
+                                        <th class="pb-2 font-medium text-right">Usuarios Act.</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-slate-700">
+                                    <tr>
+                                        <td class="py-2.5 font-medium text-xs">779123456001 (Leche Ent.)</td>
+                                        <td class="py-2.5 text-right font-mono">45,210</td>
+                                        <td class="py-2.5 text-right font-mono">38,100</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2.5 font-medium text-xs">779123456002 (Yogur Frut.)</td>
+                                        <td class="py-2.5 text-right font-mono">32,150</td>
+                                        <td class="py-2.5 text-right font-mono">29,400</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2.5 font-medium text-xs">779123456003 (Queso Crem.)</td>
+                                        <td class="py-2.5 text-right font-mono">18,900</td>
+                                        <td class="py-2.5 text-right font-mono">15,200</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl text-xs text-slate-600 mt-4">
+                        💡 <strong>Idea para debate:</strong> ¿Deberíamos correlacionar el tráfico orgánico inicial con las campañas pagas activas del Mid-Funnel?
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN: SEGMENTACIÓN DE CLIENTES Y AUDIENCIAS -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                <div>
+                    <h3 class="font-bold text-slate-800 text-lg">Métricas Clave de Audiencia y Segmentación</h3>
+                    <p class="text-xs text-slate-500">Indicadores clave de comportamiento que justifican las audiencias objetivo para marcas en el e-commerce.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- KPIs para Segmentar -->
+                    <div class="lg:col-span-5 grid grid-cols-2 gap-4">
+                        <div class="bg-brand-50/50 p-4 rounded-xl border border-brand-100">
+                            <span class="text-[10px] text-brand-600 font-bold uppercase tracking-wider block">Clientes Nuevos vs Recurrentes</span>
+                            <p class="text-xl font-extrabold text-slate-900 mt-1">32% / 68%</p>
+                            <span class="text-[10px] text-slate-500 block mt-1">Participación en las compras totales</span>
+                        </div>
+                        <div class="bg-brand-50/50 p-4 rounded-xl border border-brand-100">
+                            <span class="text-[10px] text-brand-600 font-bold uppercase tracking-wider block">Frecuencia de Compra</span>
+                            <p class="text-xl font-extrabold text-slate-900 mt-1">3.4 compras/mes</p>
+                            <span class="text-[10px] text-slate-500 block mt-1">Recurrencia media por usuario</span>
+                        </div>
+                        <div class="bg-brand-50/50 p-4 rounded-xl border border-brand-100">
+                            <span class="text-[10px] text-brand-600 font-bold uppercase tracking-wider block">Ticket Promedio (AOV)</span>
+                            <p class="text-xl font-extrabold text-slate-900 mt-1">$14,250</p>
+                            <span class="text-[10px] text-slate-500 block mt-1">Gasto medio por transacción</span>
+                        </div>
+                        <div class="bg-brand-50/50 p-4 rounded-xl border border-brand-100">
+                            <span class="text-[10px] text-brand-600 font-bold uppercase tracking-wider block">Loyalty Club Share</span>
+                            <p class="text-xl font-extrabold text-slate-900 mt-1">54.2%</p>
+                            <span class="text-[10px] text-slate-500 block mt-1">Usuarios logueados con club de beneficios</span>
+                        </div>
+                    </div>
+
+                    <!-- Distribución de Perfiles de Cliente -->
+                    <div class="lg:col-span-7 bg-slate-50 p-4 rounded-xl border border-slate-100 flex flex-col justify-between">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Composición de Audiencia Activa</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                            <div class="h-44 flex items-center justify-center">
+                                <canvas id="audiencePieChart"></canvas>
+                            </div>
+                            <div class="space-y-2 text-xs">
+                                <div class="flex justify-between items-center">
+                                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-indigo-500"></span>Smart Shoppers (Buscadores Ofertas)</span>
+                                    <span class="font-bold">40%</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-400"></span>Brand Loyalists (Leales a Marcas)</span>
+                                    <span class="font-bold">25%</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-400"></span>Compradores Impulsivos</span>
+                                    <span class="font-bold">20%</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-slate-300"></span>Inactivos de Reciente Reactivación</span>
+                                    <span class="font-bold">15%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANTALLA 2: MID FUNNEL (CAMPAÑAS, ESPACIOS, PROVEEDORES, EFICIENCIA Y FILTROS) -->
+        <section id="slide-mid" class="slide-content hidden space-y-6">
+            
+            <!-- ENCABEZADO CON FILTROS INTEGRADOS ACTIVOS -->
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">Pantalla 2: Mid Funnel (Rendimiento de Campaña)</h2>
+                    <p class="text-slate-600 text-xs mt-1">Análisis detallado de anuncios, efectividad de pauta y distribución por proveedor.</p>
+                </div>
+                
+                <!-- FILTROS FUNCIONALES -->
+                <div class="flex flex-wrap gap-2 w-full lg:w-auto">
+                    <!-- Filtro 1: Compañía -->
+                    <div class="flex flex-col flex-1 sm:flex-initial">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Filtrar por Compañía</label>
+                        <select id="mid-filter-company" onchange="applyMidFunnelFilters()" class="bg-slate-50 border border-slate-200 text-xs rounded-lg px-2.5 py-2 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <option value="todos">Todas las Compañías</option>
+                            <option value="unilever">Unilever</option>
+                            <option value="nestle">Nestlé</option>
+                            <option value="danone">Danone</option>
+                            <option value="pg">P&G</option>
+                        </select>
+                    </div>
+                    <!-- Filtro 2: Rubro -->
+                    <div class="flex flex-col flex-1 sm:flex-initial">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Filtrar por Rubro</label>
+                        <select id="mid-filter-rubro" onchange="applyMidFunnelFilters()" class="bg-slate-50 border border-slate-200 text-xs rounded-lg px-2.5 py-2 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <option value="todos">Todos los Rubros</option>
+                            <option value="lacteos">Lácteos</option>
+                            <option value="almacen">Almacén / Bebidas</option>
+                            <option value="personal">Cuidado Personal</option>
+                        </select>
+                    </div>
+                    <!-- Filtro 3: Campaña -->
+                    <div class="flex flex-col flex-1 sm:flex-initial">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Filtrar por Campaña</label>
+                        <select id="mid-filter-campaign" onchange="applyMidFunnelFilters()" class="bg-slate-50 border border-slate-200 text-xs rounded-lg px-2.5 py-2 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <option value="todas">Todas las Campañas</option>
+                            <option value="leche">Camp. Leche Entera</option>
+                            <option value="yogur">Camp. Yogures</option>
+                            <option value="queso">Camp. Queso Cremoso</option>
+                            <option value="promo">Promo Fin de Año</option>
+                            <option value="cafe">Promo Nescafé</option>
+                            <option value="shampoo">Camp. Gillette Personal</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPIs en Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <span class="text-xs text-slate-500 uppercase font-medium">Impresiones</span>
+                    <p id="kpi-impressions" class="text-2xl font-bold text-slate-900 mt-1">1.2M</p>
+                    <span class="text-xs text-emerald-600 font-semibold">↑ 12% vs mes ant.</span>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <span class="text-xs text-slate-500 uppercase font-medium">Clicks / CTR</span>
+                    <p id="kpi-clicks-ctr" class="text-2xl font-bold text-slate-900 mt-1">45.6K <span class="text-sm font-normal text-slate-500">(3.8%)</span></p>
+                    <span class="text-xs text-emerald-600 font-semibold">↑ 0.4% CTR</span>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <span class="text-xs text-slate-500 uppercase font-medium">Costo (Inversión)</span>
+                    <p id="kpi-cost" class="text-2xl font-bold text-slate-900 mt-1">$15,400</p>
+                    <span class="text-xs text-slate-500">Presupuesto en curso</span>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <span class="text-xs text-slate-500 uppercase font-medium">ROAS Promedio</span>
+                    <p id="kpi-roas" class="text-2xl font-bold text-slate-900 mt-1">4.2x</p>
+                    <span class="text-xs text-emerald-600 font-semibold">↑ 0.5x de retorno</span>
+                </div>
+            </div>
+
+            <!-- Gráfico Comparativo y Métricas de Relevancia -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="font-semibold text-slate-800 mb-4">Clicks vs. Conversiones por Campaña</h3>
+                    <div class="h-80">
+                        <canvas id="midFunnelChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Lista de KPI Adicionales -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-semibold text-slate-800 mb-4">Métricas de Relevancia</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-slate-600">Sesiones con Impresiones</span>
+                                    <span id="relevancia-sesiones-imp" class="font-bold">142,000</span>
+                                </div>
+                                <div class="w-full bg-slate-100 rounded-full h-2">
+                                    <div id="relevancia-sesiones-imp-bar" class="bg-indigo-500 h-2 rounded-full" style="width: 75%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-slate-600">Sesiones con Compras</span>
+                                    <span id="relevancia-sesiones-comp" class="font-bold">8,520</span>
+                                </div>
+                                <div class="w-full bg-slate-100 rounded-full h-2">
+                                    <div id="relevancia-sesiones-comp-bar" class="bg-emerald-500 h-2 rounded-full" style="width: 6%"></div>
+                                </div>
+                                <div id="relevancia-conversion-rate" class="text-[10px] text-slate-500 mt-1">Tasa de conversión por sesión: 6%</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl text-xs text-slate-600 mt-4">
+                        💡 <strong>Idea para debate:</strong> ¿Queremos incluir el valor monetario de conversión (`sales_val`) al lado del indicador de volumen físico de ventas para entender rentabilidad unitaria?
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráficos de Espacio y Proveedores por Categoría -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Gráfico Tipo de Espacio -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-semibold text-slate-800 mb-2">Rendimiento por Tipo de Espacio</h3>
+                        <p class="text-xs text-slate-500 mb-4">Distribución de clics obtenidos según la ubicación del anuncio en el e-commerce.</p>
+                        <div class="h-60 relative flex items-center justify-center">
+                            <canvas id="spaceTypeChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="text-[11px] text-slate-500 mt-4 border-t border-slate-100 pt-3 flex justify-between">
+                        <span>Espacio Estrella: <strong>Banner Principal</strong></span>
+                        <span class="text-indigo-600 font-semibold">54% de Clics Totales</span>
+                    </div>
+                </div>
+
+                <!-- Gráfico Proveedores por Categoría -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold text-slate-800">Distribución de Venta de Espacio (Inversión)</h3>
+                            <span class="text-xs bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full font-medium">KPI Comercial</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-4">Inversión publicitaria ($) de proveedores cruzada por sector del e-commerce. Resuelve quién invierte más y dónde.</p>
+                        <div class="h-60">
+                            <canvas id="supplierSectorChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-slate-100 pt-3 mt-4 text-xs">
+                        <div>
+                            <span class="block text-slate-400 font-medium">Mayor Inversor Global:</span>
+                            <span class="font-bold text-slate-800">Unilever ($29,000)</span>
+                        </div>
+                        <div>
+                            <span class="block text-slate-400 font-medium">Categoría Lider en Pauta:</span>
+                            <span class="font-bold text-indigo-600">Cuidado Personal ($36,000)</span>
+                        </div>
+                        <div>
+                            <span class="block text-slate-400 font-medium">Análisis rápido:</span>
+                            <span class="text-slate-600">Danone domina Lácteos; Nestlé lidera Almacén/Bebidas.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ANÁLISIS DE EFICIENCIA DE LOS ESPACIOS MÁS CAROS -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <div>
+                    <h3 class="font-bold text-slate-800 text-lg">Análisis de Eficiencia: Costo vs. Performance (¿Lo más caro rinde más?)</h3>
+                    <p class="text-xs text-slate-500">Contrasta el costo de reserva publicitaria de cada espacio con su desempeño real (CTR %) y su visibilidad absoluta (Impresiones).</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div class="lg:col-span-8">
+                        <div class="h-80">
+                            <canvas id="costPerformanceChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-4 flex flex-col justify-center bg-slate-50 p-6 rounded-xl border border-slate-100 space-y-3">
+                        <span class="text-xs text-indigo-600 font-bold uppercase tracking-wider block">Lectura Analítica</span>
+                        <h4 class="font-bold text-slate-800 text-sm">Matriz de Rendimiento:</h4>
+                        <ul class="text-xs text-slate-600 space-y-2.5 list-disc list-inside">
+                            <li><strong>Banner Home Premium (Rojo):</strong> Alta visibilidad (gran burbuja), costo elevado, pero CTR ineficiente (1.5%).</li>
+                            <li><strong>Sponsored Search (Verde):</strong> Costo de entrada óptimo, visibilidad moderada, pero CTR sobresaliente (4.8%).</li>
+                            <li><strong>Banner Categoría (Azul):</strong> El espacio más equilibrado en costo y retorno para marcas de nicho.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANTALLA 3: LOW FUNNEL (VENTAS, ATRIBUCIÓN CITRUS Y TABLA COMPARATIVA TEMPORAL) -->
+        <section id="slide-low" class="slide-content hidden space-y-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900 font-mono">Pantalla 3: Low Funnel (Atribución y Ventas)</h2>
+                    <p class="text-slate-600">La meta final del embudo: volumen de facturación y unidades físicas por SKU.</p>
+                </div>
+                <div class="flex gap-2">
+                    <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-1 rounded">Bottom of the Funnel</span>
+                </div>
+            </div>
+
+            <!-- Gráfico de Ventas Originales y Filtros Originales Reestructurados -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Gráfico de barras horizontal dinámico con Leyenda de Montos -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-semibold text-slate-800 mb-4">Ventas Acumuladas Corporativas</h3>
+                        <div class="h-64">
+                            <canvas id="lowFunnelChart"></canvas>
+                        </div>
+                    </div>
+                    <!-- LEYENDA DE MONTOS EXPLÍCITA -->
+                    <div id="low-chart-total-legend"></div>
+                </div>
+
+                <!-- PANEL DE FILTROS REALES INCORPORADOS -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-semibold text-slate-800 mb-3">Filtros de Volumen (Página 3)</h3>
+                        <p class="text-xs text-slate-500 mb-4">Aísla los cierres de venta y las agrupaciones estructurales del gráfico de pauta.</p>
+                        
+                        <div class="space-y-3.5 text-sm">
+                            <!-- Filtro 1: Campaña -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Filtrar por Campaña</label>
+                                <select id="low-filter-campaign" onchange="updateLowFunnelView()" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                    <option value="todas">Todas las Campañas</option>
+                                    <option value="leche">Camp. Leche Entera</option>
+                                    <option value="yogur">Camp. Yogures</option>
+                                    <option value="queso">Camp. Queso Cremoso</option>
+                                    <option value="promo">Promo Fin de Año</option>
+                                    <option value="cafe">Promo Nescafé</option>
+                                    <option value="shampoo">Camp. Gillette Personal</option>
+                                </select>
+                            </div>
+
+                            <!-- Filtro 2: Agrupar por (EAN, Categoría, Proveedor) -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Agrupar Eje del Gráfico por</label>
+                                <select id="low-group-by" onchange="updateLowFunnelView()" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                    <option value="ean">EAN / SKU Producto</option>
+                                    <option value="categoria">Categoría de Negocio</option>
+                                    <option value="proveedor">Proveedor / Fabricante</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-medium text-slate-500 mb-1">Rango de Fecha</label>
+                                <input type="text" disabled placeholder="01/06/2026 - 30/06/2026" class="w-full bg-slate-100 border border-slate-200 rounded-lg p-2 text-slate-600 text-xs cursor-not-allowed">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-brand-50 border border-brand-100 p-4 rounded-xl text-xs text-brand-900 mt-4">
+                        💡 <strong>Idea para debate:</strong> ¿La atribución de ventas en este reporte debe ser de 7, 14 o 30 días post-click? Esto cambiará drásticamente la relación del Funnel.
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN: ATRIBUCIÓN CITRUS VS BASE DE DATOS Y TABLA COMPARATIVA TEMPORAL -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-100">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-lg">Comparativa Temporal Multi-Métrica y Atribución Citrus</h3>
+                        <p class="text-xs text-slate-500">Mide el total de ventas físicas del e-commerce contrastándolo con las ventas atribuibles que extraemos de Citrus.</p>
+                    </div>
+                    <!-- Pestañas de Métricas Dinámicas -->
+                    <div class="flex bg-slate-100 p-1 rounded-lg border border-slate-200" id="low-funnel-metric-tabs">
+                        <button onclick="switchLowFunnelMetric('con-tasa')" id="metric-btn-con-tasa" class="px-3 py-1.5 rounded text-xs font-semibold bg-white text-slate-900 shadow-sm transition-all">
+                            Venta Con Tasa
+                        </button>
+                        <button onclick="switchLowFunnelMetric('sin-tasa')" id="metric-btn-sin-tasa" class="px-3 py-1.5 rounded text-xs font-medium text-slate-600 hover:text-slate-900 transition-all">
+                            Venta Sin Tasa
+                        </button>
+                        <button onclick="switchLowFunnelMetric('unidades')" id="metric-btn-unidades" class="px-3 py-1.5 rounded text-xs font-medium text-slate-600 hover:text-slate-900 transition-all">
+                            En Unidades
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Gráfico Comparativo Citrus vs Total -->
+                    <div class="lg:col-span-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <span class="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-4">Distribución: Venta DB vs. Atribución Citrus</span>
+                        <div class="h-64">
+                            <canvas id="citrusVsTotalChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Comparación Temporal -->
+                    <div class="lg:col-span-8 overflow-x-auto">
+                        <table class="w-full text-left text-sm" id="temporal-sales-table">
+                            <thead>
+                                <tr class="text-slate-400 text-xs uppercase border-b border-slate-100">
+                                    <th class="pb-3 font-semibold">Producto / EAN</th>
+                                    <th class="pb-3 font-semibold text-right" id="th-current-val">Venta Actual (E-com)</th>
+                                    <th class="pb-3 font-semibold text-right">vs. Mes Anterior (MoM)</th>
+                                    <th class="pb-3 font-semibold text-right">vs. Año Anterior (YoY)</th>
+                                    <th class="pb-3 font-semibold text-right">Atribuible Citrus</th>
+                                    <th class="pb-3 font-semibold text-right">Share Citrus (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-slate-700" id="temporal-sales-tbody">
+                                <!-- Inyectado dinámicamente por JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANTALLA 4: DETALLE FUNNEL INTERACTIVO POR CAMPAÑA -->
+        <section id="slide-funnel-campaign" class="slide-content hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-slate-100">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-900 font-mono">Pantalla 4: Funnel Unificado End-to-End</h2>
+                        <p class="text-slate-600 text-sm">Selecciona una campaña de Retail Media para ver cómo fluye el tráfico y la pauta hasta la conversión de ventas.</p>
+                    </div>
+                    <!-- Selector de Campaña Interactivo -->
+                    <div class="w-full md:w-auto">
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Seleccionar Campaña para Análisis</label>
+                        <select id="campaign-selector" onchange="updateCampaignFunnel(this.value)" class="w-full md:w-80 bg-brand-50 border-2 border-brand-200 text-brand-900 font-semibold rounded-xl px-4 py-2.5 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <option value="leche">Camp. Leche Entera (EAN: 779123456001)</option>
+                            <option value="yogur">Camp. Yogures (EAN: 779123456002)</option>
+                            <option value="queso">Camp. Queso Cremoso (EAN: 779123456003)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- DIAGRAMA VISUAL DEL FUNNEL -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-6">
+                    
+                    <!-- Lado Izquierdo: El Embudo Visual Horizontal/Vertical -->
+                    <div class="lg:col-span-7 space-y-4 flex flex-col justify-center">
+                        <h3 class="font-bold text-slate-800 text-base mb-2">Pérdida de Conversión del Embudo (Funnel Conversion Flow)</h3>
+                        
+                        <!-- 1. IMPRESIONES -->
+                        <div class="funnel-stage-container bg-slate-50 border border-slate-200 rounded-2xl p-4 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-full bg-slate-900 text-white font-bold text-sm flex items-center justify-center">1</span>
+                                <div>
+                                    <p class="text-xs font-bold uppercase tracking-wider text-slate-400">High-Mid Funnel</p>
+                                    <h4 class="font-bold text-slate-800">Impresiones</h4>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span id="funnel-impressions" class="text-xl font-extrabold text-slate-900">450,000</span>
+                                <span class="text-xs text-slate-500 block">Exposiciones de anuncio</span>
+                            </div>
+                        </div>
+
+                        <!-- Tasa de Conversión a Sesión -->
+                        <div class="flex justify-center -my-2 z-10">
+                            <div class="bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full border border-indigo-200 flex items-center gap-1 shadow-sm">
+                                <span>Tasa CTR:</span>
+                                <span id="funnel-ctr" class="font-mono">3.0%</span>
+                            </div>
+                        </div>
+
+                        <!-- 2. CLICKS -->
+                        <div class="funnel-stage-container bg-indigo-50 border border-indigo-100 rounded-2xl p-4 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-full bg-indigo-600 text-white font-bold text-sm flex items-center justify-center">2</span>
+                                <div>
+                                    <p class="text-xs font-bold uppercase tracking-wider text-indigo-500">Mid Funnel</p>
+                                    <h4 class="font-bold text-indigo-900">Clicks en Anuncio</h4>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span id="funnel-clicks" class="text-xl font-extrabold text-indigo-900">13,500</span>
+                                <span class="text-xs text-indigo-600 block">Interacciones de interés</span>
+                            </div>
+                        </div>
+
+                        <!-- Tránsito hacia el producto -->
+                        <div class="flex justify-center -my-2 z-10">
+                            <div class="bg-brand-100 text-brand-800 text-xs font-bold px-3 py-1 rounded-full border border-brand-200 flex items-center gap-1 shadow-sm">
+                                <span>Tasa Sesiones/Click:</span>
+                                <span id="funnel-clicks-to-sessions" class="font-mono">85.0%</span>
+                            </div>
+                        </div>
+
+                        <!-- 3. SESIONES CON IMPRESIÓN -->
+                        <div class="funnel-stage-container bg-brand-50 border border-brand-100 rounded-2xl p-4 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-full bg-brand-600 text-white font-bold text-sm flex items-center justify-center">3</span>
+                                <div>
+                                    <p class="text-xs font-bold uppercase tracking-wider text-brand-500">High Funnel Conectado</p>
+                                    <h4 class="font-bold text-brand-900">Sesiones con Impresión</h4>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span id="funnel-sessions" class="text-xl font-extrabold text-brand-900">11,475</span>
+                                <span class="text-xs text-brand-600 block">Visitas web al EAN</span>
+                            </div>
+                        </div>
+
+                        <!-- Tasa de Conversión a Compra -->
+                        <div class="flex justify-center -my-2 z-10">
+                            <div class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1 shadow-sm">
+                                <span>Tasa Conversión (CR):</span>
+                                <span id="funnel-cr" class="font-mono">6.0%</span>
+                            </div>
+                        </div>
+
+                        <!-- 4. CONVERSIONES -->
+                        <div class="funnel-stage-container bg-emerald-50 border border-emerald-100 rounded-2xl p-4 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-full bg-emerald-600 text-white font-bold text-sm flex items-center justify-center">4</span>
+                                <div>
+                                    <p class="text-xs font-bold uppercase tracking-wider text-emerald-500">Low Funnel (Bottom)</p>
+                                    <h4 class="font-bold text-emerald-900">Conversiones (Ventas Físicas)</h4>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span id="funnel-conversions" class="text-xl font-extrabold text-emerald-900">810</span>
+                                <span class="text-xs text-emerald-600 block">Órdenes Finalizadas</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lado Derecho: Indicadores Financieros de Retorno -->
+                    <div class="lg:col-span-5 flex flex-col justify-between space-y-6">
+                        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 space-y-4">
+                            <h3 class="font-bold text-slate-800 text-sm uppercase tracking-wider border-b border-slate-200 pb-2">Rendimiento Financiero de Campaña</h3>
+                            
+                            <!-- Tarjeta Inversión -->
+                            <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200">
+                                <div>
+                                    <p class="text-xs text-slate-400 font-semibold uppercase">Inversión Publicitaria (Costo)</p>
+                                    <span id="funnel-cost" class="text-2xl font-bold text-slate-800">$2,700</span>
+                                </div>
+                                <span class="text-xs bg-slate-100 px-2 py-1 rounded text-slate-500">Mid-Funnel Metric</span>
+                            </div>
+
+                            <!-- Tarjeta Venta Total -->
+                            <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200">
+                                <div>
+                                    <p class="text-xs text-slate-400 font-semibold uppercase">Venta Total Producto (Base de Datos)</p>
+                                    <span id="funnel-total-sales-db" class="text-2xl font-bold text-slate-800">$65,000</span>
+                                </div>
+                                <span class="text-xs bg-slate-100 px-2 py-1 rounded text-slate-500 font-semibold">Total E-com</span>
+                            </div>
+
+                            <!-- Tarjeta Ventas Atribuibles -->
+                            <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200">
+                                <div>
+                                    <p class="text-xs text-slate-400 font-semibold uppercase">Venta Atribuida (Citrus)</p>
+                                    <span id="funnel-sales-val" class="text-2xl font-bold text-emerald-600">$16,200</span>
+                                </div>
+                                <span class="text-xs bg-emerald-50 px-2 py-1 rounded text-emerald-600 font-semibold">Citrus Share</span>
+                            </div>
+
+                            <!-- ROAS Target -->
+                            <div class="bg-brand-600 text-white p-5 rounded-xl flex flex-col justify-center items-center shadow-md">
+                                <p class="text-xs text-brand-100 uppercase tracking-wider font-semibold">Retorno de Inversión (ROAS)</p>
+                                <span id="funnel-roas" class="text-4xl font-extrabold mt-1">6.0x</span>
+                                <p class="text-[11px] text-brand-200 mt-2 text-center">Por cada dólar invertido se generaron <span id="funnel-roas-text">$6.00</span> en ventas.</p>
+                            </div>
+                        </div>
+
+                        <!-- Cuadro didáctico -->
+                        <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-2xl">
+                            <h4 class="text-xs font-bold text-indigo-900 mb-1">🎯 Objetivo de Discusión en esta Vista:</h4>
+                            <p class="text-xs text-indigo-700 leading-relaxed">
+                                Esta vista unificada evalúa si los cuellos de botella del e-commerce se deben a un volumen bajo de tráfico orgánico / sesiones, o a una conversión ineficiente en el checkout para que las marcas puedan balancear sus inversiones.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- PANTALLA 5: NUEVA SECCIÓN - SERIES TEMPORALES DE TRÁFICO Y VENTAS (DB) -->
+        <section id="slide-timeseries" class="slide-content hidden space-y-6">
+            
+            <!-- ENCABEZADO CON FILTROS INTEGRADOS ACTIVOS DE SERIES TEMPORALES -->
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900 font-mono">Pantalla 5: Series Temporales</h2>
+                    <p class="text-slate-600 text-xs mt-1">Análisis cronológico comparativo de tráfico (High Funnel) frente al comportamiento de Ventas DB (Low Funnel).</p>
+                </div>
+                
+                <!-- FILTROS SOLICITADOS (RANGO FECHA, CATEGORÍA, PROVEEDOR) -->
+                <div class="flex flex-wrap gap-2 w-full lg:w-auto">
+                    <!-- Filtro 1: Rango de Fecha -->
+                    <div class="flex flex-col flex-1 sm:flex-initial">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Rango de Fecha</label>
+                        <select id="ts-filter-date" onchange="updateTimeSeriesCharts()" class="bg-slate-50 border border-slate-200 text-xs rounded-lg px-2.5 py-2 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <option value="4weeks">Últimas 4 Semanas (Jun 2026)</option>
+                            <option value="3months">Último Trimestre (Q2 2026)</option>
+                        </select>
+                    </div>
+                    <!-- Filtro 2: Categoría -->
+                    <div class="flex flex-col flex-1 sm:flex-initial">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Categoría</label>
+                        <select id="ts-filter-category" onchange="updateTimeSeriesCharts()" class="bg-slate-50 border border-slate-200 text-xs rounded-lg px-2.5 py-2 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <option value="todas">Todas las Categorías</option>
+                            <option value="lacteos">Lácteos</option>
+                            <option value="almacen">Almacén / Bebidas</option>
+                            <option value="personal">Cuidado Personal</option>
+                        </select>
+                    </div>
+                    <!-- Filtro 3: Proveedor -->
+                    <div class="flex flex-col flex-1 sm:flex-initial">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Proveedor</label>
+                        <select id="ts-filter-supplier" onchange="updateTimeSeriesCharts()" class="bg-slate-50 border border-slate-200 text-xs rounded-lg px-2.5 py-2 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <option value="todos">Todos los Proveedores</option>
+                            <option value="danone">Danone</option>
+                            <option value="unilever">Unilever</option>
+                            <option value="nestle">Nestlé</option>
+                            <option value="pg">P&G</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENEDOR DE LOS 2 GRÁFICOS PARALELOS CON EL MISMO EJE X -->
+            <div class="grid grid-cols-1 gap-6">
+                
+                <!-- GRÁFICO 1 DE LÍNEA: SESSIONS & ACTIVE USERS -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-slate-800 text-base">1. Evolución de Tráfico: Sesiones vs. Usuarios Activos</h3>
+                        <span class="text-xs bg-indigo-50 text-indigo-700 font-semibold px-2.5 py-1 rounded-full">High Funnel</span>
+                    </div>
+                    <div class="h-64">
+                        <canvas id="tsTrafficChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- GRÁFICO 2 DE LÍNEA: VENTAS BASE DE DATOS (DB) -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-slate-800 text-base">2. Evolución de Ventas Totales ($) (Base de Datos)</h3>
+                        <span class="text-xs bg-emerald-50 text-emerald-700 font-semibold px-2.5 py-1 rounded-full">Low Funnel (DB)</span>
+                    </div>
+                    <div class="h-64">
+                        <canvas id="tsSalesChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="bg-slate-100 border border-slate-200 p-4 rounded-xl text-xs text-slate-600 flex items-center gap-3">
+                <span class="text-lg">💡</span>
+                <p><strong>Explicación metodológica:</strong> Al alinear la escala temporal del eje X entre ambos gráficos, se puede validar de forma inmediata si un pico de tráfico en el sitio web (High Funnel) tuvo un correlato directo en el volumen facturado de la base de datos (Low Funnel) para la categoría o proveedor filtrado.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER DE PRESENTACIÓN -->
+    <footer class="bg-slate-900 text-white py-4 mt-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <span class="text-xs text-slate-400">Mockup Interactivo de Tablero (V6 con Series Temporales Integradas en Pantalla 5)</span>
+            <div class="flex gap-2">
+                <button onclick="prevSlide()" class="bg-slate-800 hover:bg-slate-700 text-sm px-4 py-2 rounded-lg font-medium transition-all">
+                    ← Atrás
+                </button>
+                <button onclick="nextSlide()" class="bg-brand-600 hover:bg-brand-500 text-sm px-4 py-2 rounded-lg font-medium transition-all">
+                    Siguiente →
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- LÓGICA DE INTERACTIVIDAD & GRÁFICOS (Vainilla JS) -->
+    <script>
+        // Array de diapositivas en orden de navegación (Incluye la pantalla 5 'timeseries')
+        const slides = ['high', 'mid', 'low', 'funnel-campaign', 'timeseries'];
+        let currentSlideIndex = 0;
+        let currentLowFunnelMetric = 'con-tasa';
+
+        // --- BASE DE DATOS FICTICIA COMPLETA DE CAMPAÑAS (Mid Funnel - Página 2) ---
+        const midFunnelCampaigns = [
+            {
+                id: 'leche', compañia: 'danone', rubro: 'lacteos', nombre: 'Camp. Leche Entera',
+                impresiones: 300000, clicks: 11000, conversiones: 770, costo: 3200, ventas: 13440, sesiones_imp: 35000, sesiones_comp: 2100, clicks_espacios: [6000, 2700, 2300],
+                bubble_data: { search: { x: 400, y: 4.8, r: 8 }, home: { x: 1500, y: 1.5, r: 15 }, category: { x: 800, y: 3.2, r: 10 }, checkout: { x: 500, y: 2.1, r: 6 } }
+            },
+            {
+                id: 'yogur', compañia: 'danone', rubro: 'lacteos', nombre: 'Camp. Yogures',
+                impresiones: 200000, clicks: 7500, conversiones: 600, costo: 2200, ventas: 9240, sesiones_imp: 23000, sesiones_comp: 1380, clicks_espacios: [4000, 1900, 1600],
+                bubble_data: { search: { x: 300, y: 4.5, r: 6 }, home: { x: 1200, y: 1.3, r: 12 }, category: { x: 500, y: 3.0, r: 8 }, checkout: { x: 200, y: 1.9, r: 4 } }
+            },
+            {
+                id: 'queso', compañia: 'danone', rubro: 'lacteos', nombre: 'Camp. Queso Cremoso',
+                impresiones: 120000, clicks: 4800, conversiones: 300, costo: 1400, ventas: 5880, sesiones_imp: 15000, sesiones_comp: 900, clicks_espacios: [2600, 1200, 1000],
+                bubble_data: { search: { x: 200, y: 4.2, r: 4 }, home: { x: 800, y: 1.1, r: 8 }, category: { x: 300, y: 2.8, r: 6 }, checkout: { x: 100, y: 1.7, r: 3 } }
+            },
+            {
+                id: 'promo', compañia: 'unilever', rubro: 'personal', nombre: 'Promo Fin de Año',
+                impresiones: 350000, clicks: 13000, conversiones: 1100, costo: 5100, ventas: 21420, sesiones_imp: 41000, sesiones_comp: 2460, clicks_espacios: [7000, 3200, 2800],
+                bubble_data: { search: { x: 800, y: 5.2, r: 10 }, home: { x: 2500, y: 1.8, r: 20 }, category: { x: 1000, y: 3.5, r: 14 }, checkout: { x: 800, y: 2.3, r: 8 } }
+            },
+            {
+                id: 'cafe', compañia: 'nestle', rubro: 'almacen', nombre: 'Promo Nescafé',
+                impresiones: 150000, clicks: 6000, conversiones: 500, costo: 2100, ventas: 8820, sesiones_imp: 18000, sesiones_comp: 1080, clicks_espacios: [3200, 1600, 1200],
+                bubble_data: { search: { x: 500, y: 4.6, r: 6 }, home: { x: 1000, y: 1.4, r: 10 }, category: { x: 400, y: 3.1, r: 8 }, checkout: { x: 200, y: 2.0, r: 5 } }
+            },
+            {
+                id: 'shampoo', compañia: 'pg', rubro: 'personal', nombre: 'Camp. Gillette Personal',
+                impresiones: 80000, clicks: 3300, conversiones: 250, costo: 1400, ventas: 5880, sesiones_imp: 10000, sesiones_comp: 600, clicks_espacios: [1800, 1000, 500],
+                bubble_data: { search: { x: 300, y: 4.3, r: 4 }, home: { x: 700, y: 1.2, r: 6 }, category: { x: 200, y: 2.9, r: 4 }, checkout: { x: 200, y: 1.8, r: 3 } }
+            }
+        ];
+
+        const initialSupplierData = {
+            lacteos: [2000, 0, 15000, 0], almacen: [5000, 18000, 3000, 2000], personal: [22000, 0, 0, 14000]
+        };
+
+        // Base de datos para la Tabla de Ventas en Low Funnel (Página 3)
+        const temporalSalesData = {
+            'con-tasa': [
+                { name: 'Leche Entera (EAN ...001)', actual: '$65,000', mom: '+8.5%', momUp: true, yoy: '+24.1%', yoyUp: true, citrus: '$16,200', share: '24.9%' },
+                { name: 'Yogur Frutilla (EAN ...002)', actual: '$48,000', mom: '-2.1%', momUp: false, yoy: '+12.3%', yoyUp: true, citrus: '$11,200', share: '23.3%' },
+                { name: 'Queso Crema (EAN ...003)', actual: '$21,000', mom: '+14.2%', momUp: true, yoy: '-5.8%', yoyUp: false, citrus: '$8,100', share: '38.6%' }
+            ],
+            'sin-tasa': [
+                { name: 'Leche Entera (EAN ...001)', actual: '$53,719', mom: '+8.5%', momUp: true, yoy: '+24.1%', yoyUp: true, citrus: '$13,397', share: '24.9%' },
+                { name: 'Yogur Frutilla (EAN ...002)', actual: '$39,696', mom: '-2.1%', momUp: false, yoy: '+12.3%', yoyUp: true, citrus: '$9,262', share: '23.3%' },
+                { name: 'Queso Cream. (EAN ...003)', actual: '$17,367', mom: '+14.2%', momUp: true, yoy: '-5.8%', yoyUp: false, citrus: '$6,703', share: '38.6%' }
+            ],
+            'unidades': [
+                { name: 'Leche Entera (EAN ...001)', actual: '43,300 U', mom: '+6.0%', momUp: true, yoy: '+18.0%', yoyUp: true, citrus: '10,800 U', share: '24.9%' },
+                { name: 'Yogur Frutilla (EAN ...002)', actual: '24,000 U', mom: '-4.0%', momUp: false, yoy: '+8.0%', yoyUp: true, citrus: '5,600 U', share: '23.3%' },
+                { name: 'Queso Cream. (EAN ...003)', actual: '7,000 U', mom: '+11.0%', momUp: true, yoy: '-9.0%', yoyUp: false, citrus: '2,700 U', share: '38.6%' }
+            ]
+        };
+
+        // Base de datos para el Funnel dinámico por Campaña (Página 4)
+        const campaignData = {
+            leche: { impressions: "450,000", ctr: "3.0%", clicks: "13,500", clicksToSessions: "85.0%", sessions: "11,475", cr: "6.0%", conversions: "810", cost: "$2,700", totalSalesDB: "$65,000", salesVal: "$16,200", roas: "6.0x", roasVal: "$6.00" },
+            yogur: { impressions: "320,000", ctr: "3.5%", clicks: "11,200", clicksToSessions: "80.0%", sessions: "8,960", cr: "5.0%", conversions: "448", cost: "$2,240", totalSalesDB: "$48,000", salesVal: "$11,200", roas: "5.0x", roasVal: "$5.00" },
+            queso: { impressions: "180,000", ctr: "3.0%", clicks: "5,400", clicksToSessions: "90.0%", sessions: "4,860", cr: "6.0%", conversions: "291", cost: "$1,350", totalSalesDB: "$21,000", salesVal: "$8,100", roas: "6.0x", roasVal: "$6.00" }
+        };
+
+        let highFunnelChart, midFunnelChart, spaceTypeChart, supplierSectorChart, costPerfChart, lowFunnelChart;
+        let tsTrafficChart, tsSalesChart; // Instancias para la nueva Pantalla 5
+
+        // Cambiar pestañas principales del Deck
+        function switchTab(tabId) {
+            currentSlideIndex = slides.indexOf(tabId);
+            document.querySelectorAll('.slide-content').forEach(slide => slide.classList.add('hidden'));
+            document.getElementById(`slide-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-slate-900', 'shadow-sm');
+                btn.classList.add('text-slate-600', 'hover:text-slate-900');
+            });
+
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-600', 'hover:text-slate-900');
+                activeBtn.classList.add('bg-white', 'text-slate-900', 'shadow-sm');
+            }
+        }
+
+        // --- SISTEMA DE FILTRADO DINÁMICO DE PÁGINA 2 (MID FUNNEL) ---
+        function applyMidFunnelFilters() {
+            const compVal = document.getElementById('mid-filter-company').value;
+            const rubroVal = document.getElementById('mid-filter-rubro').value;
+            const campVal = document.getElementById('mid-filter-campaign').value;
+
+            let filtered = midFunnelCampaigns;
+            if (compVal !== 'todos') filtered = filtered.filter(c => c.compañia === compVal);
+            if (rubroVal !== 'todos') filtered = filtered.filter(c => c.rubro === rubroVal);
+            if (campVal !== 'todas') filtered = filtered.filter(c => c.id === campVal);
+
+            let totalImp = 0, totalClicks = 0, totalConv = 0, totalCost = 0, totalSales = 0, totalSesImp = 0, totalSesComp = 0;
+            let pClicks = 0, sClicks = 0, cClicks = 0;
+
+            filtered.forEach(c => {
+                totalImp += c.impresiones; totalClicks += c.clicks; totalConv += c.conversiones; totalCost += c.costo;
+                totalSales += c.ventas; totalSesImp += c.sesiones_imp; totalSesComp += c.sesiones_comp;
+                pClicks += c.clicks_espacios[0]; sClicks += c.clicks_espacios[1]; cClicks += c.clicks_espacios[2];
+            });
+
+            const ctr = totalImp > 0 ? ((totalClicks / totalImp) * 100).toFixed(1) : "0.0";
+            const roas = totalCost > 0 ? (totalSales / totalCost).toFixed(1) : "0.0";
+            const convRate = totalSesImp > 0 ? Math.round((totalSesComp / totalSesImp) * 100) : 0;
+            const f = n => n.toLocaleString('en-US');
+
+            const kpiImp = totalImp >= 1000000 ? (totalImp / 1000000).toFixed(1) + 'M' : (totalImp >= 1000 ? (totalImp / 1000).toFixed(1) + 'K' : totalImp);
+            const kpiClicks = totalClicks >= 1000 ? (totalClicks / 1000).toFixed(1) + 'K' : totalClicks;
+
+            document.getElementById('kpi-impressions').innerText = kpiImp;
+            document.getElementById('kpi-clicks-ctr').innerHTML = `${kpiClicks} <span class="text-sm font-normal text-slate-500">(${ctr}%)</span>`;
+            document.getElementById('kpi-cost').innerText = `$${f(totalCost)}`;
+            document.getElementById('kpi-roas').innerText = `${roas}x`;
+
+            document.getElementById('relevancia-sesiones-imp').innerText = f(totalSesImp);
+            document.getElementById('relevancia-sesiones-comp').innerText = f(totalSesComp);
+            
+            const pctImp = Math.min(100, Math.round((totalSesImp / 150000) * 100));
+            const pctComp = Math.min(100, Math.round((totalSesComp / 10000) * 100));
+            document.getElementById('relevancia-sesiones-imp-bar').style.width = `${pctImp}%`;
+            document.getElementById('relevancia-sesiones-comp-bar').style.width = `${pctComp}%`;
+            document.getElementById('relevancia-conversion-rate').innerText = `Tasa de conversión por sesión: ${convRate}%`;
+
+            midFunnelChart.data.labels = filtered.map(c => c.nombre);
+            midFunnelChart.data.datasets[0].data = filtered.map(c => c.clicks);
+            midFunnelChart.data.datasets[1].data = filtered.map(c => c.conversiones);
+            midFunnelChart.update();
+
+            spaceTypeChart.data.datasets[0].data = [pClicks, sClicks, cClicks];
+            spaceTypeChart.update();
+
+            let filteredSupplier = JSON.parse(JSON.stringify(initialSupplierData));
+            if (compVal !== 'todos') {
+                const idxComp = ['unilever', 'nestle', 'danone', 'pg'].indexOf(compVal);
+                ['lacteos', 'almacen', 'personal'].forEach(k => {
+                    for (let i = 0; i < 4; i++) { if (i !== idxComp) filteredSupplier[k][i] = 0; }
+                });
+            }
+            if (rubroVal !== 'todos') {
+                ['lacteos', 'almacen', 'personal'].forEach(k => { if (k !== rubroVal) filteredSupplier[k] = [0, 0, 0, 0]; });
+            }
+            supplierSectorChart.data.datasets[0].data = filteredSupplier.lacteos;
+            supplierSectorChart.data.datasets[1].data = filteredSupplier.almacen;
+            supplierSectorChart.data.datasets[2].data = filteredSupplier.personal;
+            supplierSectorChart.update();
+
+            let sX = 0, sY = 0, sR = 0, hX = 0, hY = 0, hR = 0, caX = 0, caY = 0, caR = 0, chX = 0, chY = 0, chR = 0;
+            let cnt = filtered.length;
+            filtered.forEach(c => {
+                sX += c.bubble_data.search.x; sY += c.bubble_data.search.y; sR += c.bubble_data.search.r;
+                hX += c.bubble_data.home.x; hY += c.bubble_data.home.y; hR += c.bubble_data.home.r;
+                caX += c.bubble_data.category.x; caY += c.bubble_data.category.y; caR += c.bubble_data.category.r;
+                chX += c.bubble_data.checkout.x; chY += c.bubble_data.checkout.y; chR += c.bubble_data.checkout.r;
+            });
+            if (cnt > 0) {
+                costPerfChart.data.datasets[0].data = [{ x: Math.round(hX/cnt), y: Number((hY/cnt).toFixed(1)), r: Number((hR/cnt).toFixed(1)), label: 'Banner Home Premium' }];
+                costPerfChart.data.datasets[1].data = [{ x: Math.round(sX/cnt), y: Number((sY/cnt).toFixed(1)), r: Number((sR/cnt).toFixed(1)), label: 'Sponsored Search' }];
+                costPerfChart.data.datasets[2].data = [{ x: Math.round(caX/cnt), y: Number((caY/cnt).toFixed(1)), r: Number((caR/cnt).toFixed(1)), label: 'Banner Categoría' }];
+                costPerfChart.data.datasets[3].data = [{ x: Math.round(chX/cnt), y: Number((chY/cnt).toFixed(1)), r: Number((chR/cnt).toFixed(1)), label: 'Checkout Pop-up' }];
+            } else { costPerfChart.data.datasets.forEach(d => d.data = []); }
+            costPerfChart.update();
+        }
+
+        // --- LÓGICA DE FILTRADO Y AGRUPACIÓN DE PÁGINA 3 (LOW FUNNEL) ---
+        function updateLowFunnelView() {
+            const campaign = document.getElementById('low-filter-campaign').value;
+            const groupBy = document.getElementById('low-group-by').value;
+            const metric = currentLowFunnelMetric;
+
+            let labels = [];
+            let chartData = [];
+            let prefix = (metric === 'unidades') ? '' : '$';
+            let suffix = (metric === 'unidades') ? ' U' : '';
+
+            if (groupBy === 'ean') {
+                labels = ['Leche Entera (EAN ...001)', 'Yogur Frutilla (EAN ...002)', 'Queso Crema (EAN ...003)'];
+                chartData = (metric === 'con-tasa') ? [65000, 48000, 21000] : ((metric === 'sin-tasa') ? [53719, 39696, 17367] : [43300, 24000, 7000]);
+                
+                if (campaign === 'leche') chartData = [chartData[0], 0, 0];
+                else if (campaign === 'yogur') chartData = [0, chartData[1], 0];
+                else if (campaign === 'queso') chartData = [0, 0, chartData[2]];
+                else if (campaign === 'cafe' || campaign === 'shampoo') chartData = [0, 0, 0];
+            } else if (groupBy === 'categoria') {
+                labels = ['Lácteos', 'Almacén / Bebidas', 'Cuidado Personal'];
+                chartData = (metric === 'con-tasa') ? [134000, 8820, 27300] : ((metric === 'sin-tasa') ? [110782, 7289, 22559] : [74300, 6000, 3300]);
+                
+                if (campaign === 'leche' || campaign === 'yogur' || campaign === 'queso') chartData = [chartData[0], 0, 0];
+                else if (campaign === 'cafe') chartData = [0, chartData[1], 0];
+                else if (campaign === 'shampoo') chartData = [0, 0, chartData[2]];
+            } else if (groupBy === 'proveedor') {
+                labels = ['Unilever', 'Nestlé', 'Danone', 'P&G'];
+                chartData = (metric === 'con-tasa') ? [21420, 8820, 134000, 5880] : ((metric === 'sin-tasa') ? [17701, 7289, 110782, 4856] : [13000, 6000, 74300, 3300]);
+                
+                if (campaign === 'leche' || campaign === 'yogur' || campaign === 'queso') chartData = [0, 0, chartData[2], 0];
+                else if (campaign === 'promo') chartData = [chartData[0], 0, 0, 0];
+                else if (campaign === 'cafe') chartData = [0, chartData[1], 0, 0];
+                else if (campaign === 'shampoo') chartData = [0, 0, 0, chartData[3]];
+            }
+
+            lowFunnelChart.data.labels = labels;
+            lowFunnelChart.data.datasets[0].data = chartData;
+            lowFunnelChart.data.datasets[0].label = `Ventas (${metric.replace('-', ' ')})`;
+            lowFunnelChart.update();
+
+            let totalSum = chartData.reduce((a, b) => a + b, 0);
+            document.getElementById('low-chart-total-legend').innerHTML = `
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs mt-3 gap-2">
+                    <span class="text-slate-500 font-semibold uppercase tracking-wider text-[10px]">Monto / Volumen Consolidado del Gráfico:</span>
+                    <span class="font-mono font-bold text-brand-700 bg-white border border-brand-200 px-3 py-1 rounded-md shadow-sm text-sm">
+                        ${prefix}${totalSum.toLocaleString('en-US')}${suffix}
+                    </span>
+                </div>
+            `;
+        }
+
+        // --- SISTEMA DE METRICAS EN TABLA DE LOW FUNNEL ---
+        function switchLowFunnelMetric(metricKey) {
+            currentLowFunnelMetric = metricKey;
+            document.querySelectorAll('#low-funnel-metric-tabs button').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-slate-900', 'shadow-sm');
+                btn.classList.add('text-slate-600', 'hover:text-slate-900');
+            });
+            const activeBtn = document.getElementById(`metric-btn-${metricKey}`);
+            activeBtn.classList.remove('text-slate-600', 'hover:text-slate-900');
+            activeBtn.classList.add('bg-white', 'text-slate-900', 'shadow-sm');
+
+            const tbody = document.getElementById('temporal-sales-tbody');
+            tbody.innerHTML = '';
+            
+            const rows = temporalSalesData[metricKey];
+            rows.forEach(row => {
+                const tr = document.createElement('tr');
+                const momColor = row.momUp ? 'text-emerald-600 font-semibold' : 'text-rose-500 font-semibold';
+                const yoyColor = row.yoyUp ? 'text-emerald-600 font-semibold' : 'text-rose-500 font-semibold';
+                
+                tr.innerHTML = `
+                    <td class="py-3 font-medium text-xs text-slate-900">${row.name}</td>
+                    <td class="py-3 text-right font-mono font-bold">${row.actual}</td>
+                    <td class="py-3 text-right font-mono ${momColor}">${row.mom}</td>
+                    <td class="py-3 text-right font-mono ${yoyColor}">${row.yoy}</td>
+                    <td class="py-3 text-right font-mono text-slate-600 font-semibold">${row.citrus}</td>
+                    <td class="py-3 text-right"><span class="bg-brand-50 text-brand-700 font-bold px-2 py-0.5 rounded text-xs font-mono">${row.share}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            let headerText = "Venta Actual (DB)";
+            if(metricKey === 'sin-tasa') headerText = "Venta Neto (DB)";
+            if(metricKey === 'unidades') headerText = "Volumen (DB)";
+            document.getElementById('th-current-val').innerText = headerText;
+
+            updateLowFunnelView();
+        }
+
+        // Lógica de Funnel por campaña (Página 4)
+        function updateCampaignFunnel(campaignKey) {
+            const data = campaignData[campaignKey];
+            if (!data) return;
+
+            const stages = document.querySelectorAll('.funnel-stage-container');
+            stages.forEach(stage => stage.style.opacity = '0.4');
+
+            setTimeout(() => {
+                document.getElementById('funnel-impressions').innerText = data.impressions;
+                document.getElementById('funnel-ctr').innerText = data.ctr;
+                document.getElementById('funnel-clicks').innerText = data.clicks;
+                document.getElementById('funnel-clicks-to-sessions').innerText = data.clicksToSessions;
+                document.getElementById('funnel-sessions').innerText = data.sessions;
+                document.getElementById('funnel-cr').innerText = data.cr;
+                document.getElementById('funnel-conversions').innerText = data.conversions;
+                
+                document.getElementById('funnel-cost').innerText = data.cost;
+                document.getElementById('funnel-total-sales-db').innerText = data.totalSalesDB;
+                document.getElementById('funnel-sales-val').innerText = data.salesVal;
+                document.getElementById('funnel-roas').innerText = data.roas;
+                document.getElementById('funnel-roas-text').innerText = data.roasVal;
+
+                stages.forEach(stage => stage.style.opacity = '1');
+            }, 200);
+        }
+
+        // --- SISTEMA DE FILTRADO Y ACTUALIZACIÓN DE PÁGINA 5 (SERIES TEMPORALES) ---
+        function updateTimeSeriesCharts() {
+            const dateRange = document.getElementById('ts-filter-date').value;
+            const category = document.getElementById('ts-filter-category').value;
+            const supplier = document.getElementById('ts-filter-supplier').value;
+
+            let labels = [];
+            let sessionsData = [];
+            let activeUsersData = [];
+            let salesDBData = [];
+
+            if (dateRange === '4weeks') {
+                labels = ['Semana 1 (Jun)', 'Semana 2 (Jun)', 'Semana 3 (Jun)', 'Semana 4 (Jun)'];
+                sessionsData = [15000, 24000, 32000, 28000];
+                activeUsersData = [11000, 18500, 24000, 21000];
+                salesDBData = [22000, 35000, 48000, 41000];
+            } else {
+                labels = ['Abril 2026', 'Mayo 2026', 'Junio 2026'];
+                sessionsData = [68000, 82000, 99000];
+                activeUsersData = [51000, 64000, 74500];
+                salesDBData = [105000, 128000, 146000];
+            }
+
+            // Aplicar modificador proporcional de datos según filtros
+            let factor = 1.0;
+            if (category === 'lacteos') factor *= 0.55;
+            else if (category === 'almacen') factor *= 0.25;
+            else if (category === 'personal') factor *= 0.20;
+
+            if (supplier === 'danone') factor *= 0.45;
+            else if (supplier === 'unilever') factor *= 0.30;
+            else if (supplier === 'nestle') factor *= 0.15;
+            else if (supplier === 'pg') factor *= 0.10;
+
+            sessionsData = sessionsData.map(v => Math.round(v * factor));
+            activeUsersData = activeUsersData.map(v => Math.round(v * factor));
+            salesDBData = salesDBData.map(v => Math.round(v * factor));
+
+            // Actualización de Chart 1 (Tráfico)
+            tsTrafficChart.data.labels = labels;
+            tsTrafficChart.data.datasets[0].data = sessionsData;
+            tsTrafficChart.data.datasets[1].data = activeUsersData;
+            tsTrafficChart.update();
+
+            // Actualización de Chart 2 (Ventas DB)
+            tsSalesChart.data.labels = labels;
+            tsSalesChart.data.datasets[0].data = salesDBData;
+            tsSalesChart.update();
+        }
+
+        // Navegación de footer
+        function nextSlide() {
+            if (currentSlideIndex < slides.length - 1) { currentSlideIndex++; switchTab(slides[currentSlideIndex]); }
+        }
+        function prevSlide() {
+            if (currentSlideIndex > 0) { currentSlideIndex--; switchTab(slides[currentSlideIndex]); }
+        }
+
+        // --- INICIALIZACIÓN DE GRÁFICOS (CHART.JS) ---
+
+        // 1. Gráfico High Funnel (Líneas)
+        const ctxHigh = document.getElementById('highFunnelChart').getContext('2d');
+        new Chart(ctxHigh, {
+            type: 'line',
+            data: {
+                labels: ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'],
+                datasets: [
+                    { label: 'Sesiones Totales', data: [15000, 24000, 32000, 28000], borderColor: '#6366f1', backgroundColor: 'rgba(99, 102, 241, 0.1)', fill: true, tension: 0.4 },
+                    { label: 'Usuarios Activos', data: [11000, 18500, 24000, 21000], borderColor: '#3b82f6', backgroundColor: 'transparent', borderDash: [5, 5], tension: 0.4 }
+                ]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } }, scales: { y: { grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } } }
+        });
+
+        // 2. Gráfico: Rosca de Segmentación de Audiencias (Página 1)
+        const ctxAudience = document.getElementById('audiencePieChart').getContext('2d');
+        new Chart(ctxAudience, {
+            type: 'doughnut',
+            data: {
+                labels: ['Smart Shoppers', 'Brand Loyalists', 'Impulsivos', 'Inactivos'],
+                datasets: [{ data: [40, 25, 20, 15], backgroundColor: ['#6366f1', '#34d399', '#fbbf24', '#cbd5e1'], borderWidth: 2, borderColor: '#ffffff' }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+
+        // 3. Gráfico Mid Funnel (Clicks vs Conversiones)
+        const ctxMid = document.getElementById('midFunnelChart').getContext('2d');
+        midFunnelChart = new Chart(ctxMid, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [
+                    { label: 'Clicks Obtenidos', data: [], backgroundColor: '#818cf8', borderRadius: 6 },
+                    { label: 'Conversiones (Ventas Publicitarias)', data: [], backgroundColor: '#34d399', borderRadius: 6 }
+                ]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } }, scales: { y: { grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } } }
+        });
+
+        // 4. Gráfico Mid Funnel (Doughnut Tipo de Espacio)
+        const ctxSpace = document.getElementById('spaceTypeChart').getContext('2d');
+        spaceTypeChart = new Chart(ctxSpace, {
+            type: 'doughnut',
+            data: {
+                labels: ['Banner Principal', 'Banner Secundario', 'Banner Categoría'],
+                datasets: [{ data: [], backgroundColor: ['#4f46e5', '#818cf8', '#cbd5e1'], borderWidth: 2, borderColor: '#ffffff' }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } } }
+        });
+
+        // 5. Gráfico Mid Funnel (Stacked Bar Proveedores e Inversión)
+        const ctxSupplier = document.getElementById('supplierSectorChart').getContext('2d');
+        supplierSectorChart = new Chart(ctxSupplier, {
+            type: 'bar',
+            data: {
+                labels: ['Unilever', 'Nestlé', 'Danone', 'P&G'],
+                datasets: [
+                    { label: 'Lácteos', data: [], backgroundColor: '#6366f1' },
+                    { label: 'Almacén / Bebidas', data: [], backgroundColor: '#38bdf8' },
+                    { label: 'Cuidado Personal', data: [], backgroundColor: '#34d399' }
+                ]
+            },
+            options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, grid: { color: '#f1f5f9' }, ticks: { callback: function(value) { return '$' + value; } } } }, plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { size: 10 } } } } }
+        });
+
+        // 6. Gráfico Mid Funnel: Burbujas Costo vs Performance
+        const ctxCostPerf = document.getElementById('costPerformanceChart').getContext('2d');
+        costPerfChart = new Chart(ctxCostPerf, {
+            type: 'bubble',
+            data: {
+                datasets: [
+                    { label: 'Banner Home Premium', data: [], backgroundColor: 'rgba(239, 68, 68, 0.6)', borderColor: 'rgba(239, 68, 68, 1)', borderWidth: 1.5 },
+                    { label: 'Sponsored Search', data: [], backgroundColor: 'rgba(52, 211, 153, 0.6)', borderColor: 'rgba(52, 211, 153, 1)', borderWidth: 1.5 },
+                    { label: 'Banner Categoría', data: [], backgroundColor: 'rgba(99, 102, 241, 0.6)', borderColor: 'rgba(99, 102, 241, 1)', borderWidth: 1.5 },
+                    { label: 'Checkout Pop-up', data: [], backgroundColor: 'rgba(251, 191, 36, 0.6)', borderColor: 'rgba(251, 191, 36, 1)', borderWidth: 1.5 }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: {
+                    x: { title: { display: true, text: 'Inversión Real ($)', font: { weight: 'bold', size: 11 } }, ticks: { callback: function(val) { return '$' + val; } }, grid: { color: '#f1f5f9' } },
+                    y: { title: { display: true, text: 'CTR Promedio (%)', font: { weight: 'bold', size: 11 } }, ticks: { callback: function(val) { return val + '%'; } }, grid: { color: '#f1f5f9' } }
+                },
+                plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { size: 10 } } }, tooltip: { callbacks: { label: function(context) { let item = context.raw; return item.label + ': Inversión $' + item.x + ' | CTR ' + item.y + '% | Impresiones (R): ' + (item.r * 15) + 'K'; } } } }
+            }
+        });
+
+        // 7. Gráfico Low Funnel (Horizontal Bar)
+        const ctxLow = document.getElementById('lowFunnelChart').getContext('2d');
+        lowFunnelChart = new Chart(ctxLow, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Ventas',
+                    data: [],
+                    backgroundColor: ['rgba(99, 102, 241, 0.85)', 'rgba(52, 211, 153, 0.85)', 'rgba(251, 191, 36, 0.85)', 'rgba(148, 163, 184, 0.85)'],
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let val = context.raw;
+                                let p = (currentLowFunnelMetric === 'unidades') ? '' : '$';
+                                let s = (currentLowFunnelMetric === 'unidades') ? ' U' : '';
+                                return `${context.label}: ${p}${val.toLocaleString('en-US')}${s}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: { grid: { color: '#f1f5f9' }, ticks: { callback: function(val) { return (currentLowFunnelMetric === 'unidades') ? val.toLocaleString() + ' U' : '$' + val.toLocaleString(); } } },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+
+        // 8. Gráfico Low Funnel: Ventas Totales vs Citrus
+        const ctxCitrusTotal = document.getElementById('citrusVsTotalChart').getContext('2d');
+        new Chart(ctxCitrusTotal, {
+            type: 'bar',
+            data: {
+                labels: ['Leche Entera', 'Yogur Frutilla', 'Queso Crema'],
+                datasets: [
+                    { label: 'Total E-commerce (DB)', data: [65000, 48000, 21000], backgroundColor: '#cbd5e1', borderRadius: 4 },
+                    { label: 'Atribuido Citrus', data: [16200, 11200, 8100], backgroundColor: '#10b981', borderRadius: 4 }
+                ]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 9 } } } }, scales: { y: { grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } } }
+        });
+
+        // 9. INICIALIZACIÓN DE PANTALLA 5: SERIES TEMPORALES
+        const ctxTSTraffic = document.getElementById('tsTrafficChart').getContext('2d');
+        tsTrafficChart = new Chart(ctxTSTraffic, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    { label: 'Sesiones', data: [], borderColor: '#6366f1', backgroundColor: 'rgba(99, 102, 241, 0.1)', fill: true, tension: 0.4 },
+                    { label: 'Usuarios Activos', data: [], borderColor: '#3b82f6', backgroundColor: 'transparent', borderDash: [4, 4], tension: 0.4 }
+                ]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } }, scales: { y: { grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } } }
+        });
+
+        const ctxTSSales = document.getElementById('tsSalesChart').getContext('2d');
+        tsSalesChart = new Chart(ctxTSSales, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    { label: 'Ventas Totales DB ($)', data: [], borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4 }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { position: 'top' } },
+                scales: {
+                    y: { grid: { color: '#f1f5f9' }, ticks: { callback: function(val) { return '$' + val.toLocaleString(); } } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Ejecutar cargas iniciales funcionales
+        applyMidFunnelFilters();
+        switchLowFunnelMetric('con-tasa'); 
+        updateTimeSeriesCharts(); // Inicializar Pantalla 5
+    </script>
+</body>
+</html>
