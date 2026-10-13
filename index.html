@@ -175,7 +175,7 @@
                         <h2 class="text-xl font-bold text-brand-900">Mid Funnel: Rendimiento de Campaña</h2>
                     </div>
                     <div class="flex flex-wrap gap-2 w-full lg:w-auto">
-                        <select id="mid-filter-company" onchange="applyMidFunnelFilters()" class="bg-slate-50 border border-slate-300 text-xs rounded-md px-2.5 py-2 font-medium focus:outline-none"><option value="todos">Todas Cías</option><option value="unilever">Unilever</option><option value="nestle">Nestlé</option><option value="danone">Danone</option><option value="pg">P&G</option></select>
+                        <select id="mid-filter-company" onchange="applyMidFunnelFilters()" class="bg-slate-50 border border-slate-300 text-xs rounded-md px-2.5 py-2 font-medium focus:outline-none"><option value="todos">Todas Cías</option><option value="marca1">Marca 1</option><option value="marca2">Marca 2</option><option value="marca3">Marca 3</option><option value="marca4">Marca 4</option></select>
                         <select id="mid-filter-rubro" onchange="applyMidFunnelFilters()" class="bg-slate-50 border border-slate-300 text-xs rounded-md px-2.5 py-2 font-medium focus:outline-none"><option value="todos">Todos</option><option value="lacteos">Lácteos</option><option value="almacen">Almacén / Bebidas</option><option value="personal">Cuidado Personal</option></select>
                         <select id="mid-filter-campaign" onchange="applyMidFunnelFilters()" class="bg-slate-50 border border-slate-300 text-xs rounded-md px-2.5 py-2 font-medium focus:outline-none"><option value="todas">Todas Campañas</option><option value="leche">Leche</option><option value="yogur">Yogures</option><option value="queso">Queso</option><option value="promo">Promo</option><option value="cafe">Cafe</option><option value="shampoo">Shampoo</option></select>
                     </div>
@@ -220,18 +220,27 @@
                 <div class="border-l-4 border-brand-magenta pl-3">
                     <h2 class="text-2xl font-bold text-brand-900">Low Funnel: Atribución y Ventas</h2>
                 </div>
+                
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-slate-800 mb-4">Ventas Acumuladas</h3>
+                        <h3 class="font-bold text-slate-800 mb-4">Ventas Acumuladas Corporativas</h3>
                         <div class="h-64"><canvas id="lowFunnelChart"></canvas></div>
                         <div id="low-chart-total-legend" class="mt-4"></div>
                     </div>
                     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                         <h3 class="font-bold text-slate-800 mb-4">Filtros de Volumen</h3>
-                        <select id="low-filter-campaign" onchange="updateLowFunnelView()" class="w-full bg-slate-50 border border-slate-300 rounded-md p-2 text-sm mb-4"><option value="todas">Todas</option><option value="leche">Leche</option><option value="yogur">Yogures</option><option value="queso">Queso</option><option value="promo">Promo</option><option value="cafe">Cafe</option><option value="shampoo">Shampoo</option></select>
+                        <select id="low-filter-campaign" onchange="updateLowFunnelView()" class="w-full bg-slate-50 border border-slate-300 rounded-md p-2 text-sm mb-4"><option value="todas">Todas las Campañas</option><option value="leche">Leche</option><option value="yogur">Yogures</option><option value="queso">Queso</option><option value="promo">Promo</option><option value="cafe">Cafe</option><option value="shampoo">Shampoo</option></select>
                         <select id="low-group-by" onchange="updateLowFunnelView()" class="w-full bg-slate-50 border border-slate-300 rounded-md p-2 text-sm"><option value="ean">EAN</option><option value="categoria">Categoría</option><option value="proveedor">Proveedor</option></select>
                     </div>
                 </div>
+
+                <!-- NUEVO GRÁFICO: SHARE DE CATEGORÍA (PUBLICITADOS VS NO PUBLICITADOS) -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-brand-900 mb-2">Share de Categoría: Productos Publicitados vs Resto (Digital)</h3>
+                    <p class="text-xs text-slate-500 mb-4">Comparación del volumen de ventas de los EANs bajo campaña vs el total orgánico de su misma categoría.</p>
+                    <div class="h-80"><canvas id="digitalCatCompChart"></canvas></div>
+                </div>
+
                 <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-100">
                         <h3 class="font-bold text-brand-900 text-lg">Comparativa Temporal y Atribución Citrus</h3>
@@ -298,8 +307,8 @@
                     <div class="border-l-4 border-brand-magenta pl-3"><h2 class="text-2xl font-bold text-brand-900">Series Temporales: Tráfico y Ventas</h2></div>
                     <div class="flex gap-2">
                         <select id="ts-filter-date" onchange="updateTimeSeriesCharts()" class="bg-slate-50 border rounded-md px-2 py-1 text-xs"><option value="4weeks">Últimas 4 Semanas</option><option value="3months">Último Trimestre</option></select>
-                        <select id="ts-filter-category" onchange="updateTimeSeriesCharts()" class="bg-slate-50 border rounded-md px-2 py-1 text-xs"><option value="todas">Todas</option><option value="lacteos">Lácteos</option></select>
-                        <select id="ts-filter-supplier" onchange="updateTimeSeriesCharts()" class="bg-slate-50 border rounded-md px-2 py-1 text-xs"><option value="todos">Todos</option><option value="danone">Danone</option></select>
+                        <select id="ts-filter-category" onchange="updateTimeSeriesCharts()" class="bg-slate-50 border rounded-md px-2 py-1 text-xs"><option value="todas">Todas</option><option value="lacteos">Lácteos</option><option value="almacen">Almacén</option></select>
+                        <select id="ts-filter-supplier" onchange="updateTimeSeriesCharts()" class="bg-slate-50 border rounded-md px-2 py-1 text-xs"><option value="todos">Todos</option><option value="marca3">Marca 3</option><option value="marca1">Marca 1</option></select>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 gap-6">
@@ -316,18 +325,19 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- ENTORNO INSTORE -->
+        <!-- ENTORNO INSTORE (KV APLICADO) -->
         <!-- ========================================== -->
         <div id="env-instore-content" class="hidden">
             
             <!-- PESTAÑA 1 INSTORE -->
             <section id="slide-instore-perf" class="slide-content-ins space-y-6">
+                
                 <div class="bg-kv p-6 rounded-xl shadow-md text-white flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                     <div class="border-l-4 border-brand-magenta pl-3">
                         <h2 class="text-2xl font-bold">Análisis de Campañas Físicas (InStore)</h2>
                     </div>
                     <div class="flex gap-2 w-full lg:w-auto">
-                        <select id="instore-filter-campaign" onchange="applyInstoreFilters()" class="bg-brand-900 border border-brand-600 text-white text-xs rounded-md px-3 py-2 font-bold focus:outline-none"><option value="coca">Cabecera Coca-Cola</option><option value="gillette">Isla Gillette</option></select>
+                        <select id="instore-filter-campaign" onchange="applyInstoreFilters()" class="bg-brand-900 border border-brand-600 text-white text-xs rounded-md px-3 py-2 font-bold focus:outline-none"><option value="marca5">Cabecera Marca 5</option><option value="marca6">Isla Marca 6</option></select>
                         <select id="instore-filter-format" onchange="applyInstoreFilters()" class="bg-brand-900 border border-brand-600 text-white text-xs rounded-md px-3 py-2 font-bold focus:outline-none"><option value="todos">Todos los Formatos</option><option value="hiper">Hipermercados</option><option value="market">Market</option><option value="express">Express</option><option value="maxi">Maxi</option></select>
                         <select id="instore-filter-region" onchange="applyInstoreFilters()" class="bg-brand-900 border border-brand-600 text-white text-xs rounded-md px-3 py-2 font-bold focus:outline-none"><option value="nacional">Nacional</option><option value="amba">AMBA</option><option value="centro">Centro</option></select>
                     </div>
@@ -379,6 +389,13 @@
                     </div>
                 </div>
                 
+                <!-- NUEVO GRÁFICO: SHARE DE CATEGORÍA (PUBLICITADOS VS NO PUBLICITADOS) INSTORE -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-brand-900 mb-2">Comportamiento en la Categoría: Publicitados vs Resto (InStore)</h3>
+                    <p class="text-xs text-slate-500 mb-4">Volumen de ventas dentro de las tiendas Test, separando los EANs bajo campaña de los EANs orgánicos de la misma categoría.</p>
+                    <div class="h-80"><canvas id="instoreCatCompChart"></canvas></div>
+                </div>
+
                 <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                     <h3 class="font-bold text-brand-900 mb-4">Detalle de Comparativa por Formato</h3>
                     <div class="overflow-x-auto">
@@ -400,7 +417,7 @@
                     <h2 class="text-2xl font-bold border-l-4 border-brand-magenta pl-3">Perfil del Shopper InStore</h2>
                     <div class="flex gap-2">
                         <select id="instore-shopper-filter-date" onchange="applyInstoreShopperFilters()" class="bg-brand-900 border border-brand-600 text-white text-xs rounded-md px-3 py-2 font-bold focus:outline-none"><option value="30d">Últimos 30 Días</option><option value="last_month">Mes Anterior</option></select>
-                        <select id="instore-shopper-filter-campaign" onchange="applyInstoreShopperFilters()" class="bg-brand-900 border border-brand-600 text-white text-xs rounded-md px-3 py-2 font-bold focus:outline-none"><option value="coca">Coca-Cola</option><option value="gillette">Gillette</option></select>
+                        <select id="instore-shopper-filter-campaign" onchange="applyInstoreShopperFilters()" class="bg-brand-900 border border-brand-600 text-white text-xs rounded-md px-3 py-2 font-bold focus:outline-none"><option value="marca5">Marca 5</option><option value="marca6">Marca 6</option></select>
                     </div>
                 </div>
 
@@ -448,12 +465,12 @@
         // BASES DE DATOS MOCKUP
         // ==========================================
         const midFunnelCampaigns = [
-            { id: 'leche', compañia: 'danone', rubro: 'lacteos', nombre: 'Camp. Leche', impresiones: 300000, clicks: 11000, conversiones: 770, costo: 3200, ventas: 13440, sesiones_imp: 35000, sesiones_comp: 2100, clicks_espacios: [6000, 2700, 2300], bubble_data: { search: { x: 400, y: 4.8, r: 8 }, home: { x: 1500, y: 1.5, r: 15 }, category: { x: 800, y: 3.2, r: 10 }, checkout: { x: 500, y: 2.1, r: 6 } } },
-            { id: 'yogur', compañia: 'danone', rubro: 'lacteos', nombre: 'Camp. Yogures', impresiones: 200000, clicks: 7500, conversiones: 600, costo: 2200, ventas: 9240, sesiones_imp: 23000, sesiones_comp: 1380, clicks_espacios: [4000, 1900, 1600], bubble_data: { search: { x: 300, y: 4.5, r: 6 }, home: { x: 1200, y: 1.3, r: 12 }, category: { x: 500, y: 3.0, r: 8 }, checkout: { x: 200, y: 1.9, r: 4 } } },
-            { id: 'queso', compañia: 'danone', rubro: 'lacteos', nombre: 'Camp. Queso', impresiones: 120000, clicks: 4800, conversiones: 300, costo: 1400, ventas: 5880, sesiones_imp: 15000, sesiones_comp: 900, clicks_espacios: [2600, 1200, 1000], bubble_data: { search: { x: 200, y: 4.2, r: 4 }, home: { x: 800, y: 1.1, r: 8 }, category: { x: 300, y: 2.8, r: 6 }, checkout: { x: 100, y: 1.7, r: 3 } } },
-            { id: 'promo', compañia: 'unilever', rubro: 'personal', nombre: 'Promo Fin de Año', impresiones: 350000, clicks: 13000, conversiones: 1100, costo: 5100, ventas: 21420, sesiones_imp: 41000, sesiones_comp: 2460, clicks_espacios: [7000, 3200, 2800], bubble_data: { search: { x: 800, y: 5.2, r: 10 }, home: { x: 2500, y: 1.8, r: 20 }, category: { x: 1000, y: 3.5, r: 14 }, checkout: { x: 800, y: 2.3, r: 8 } } },
-            { id: 'cafe', compañia: 'nestle', rubro: 'almacen', nombre: 'Promo Nescafé', impresiones: 150000, clicks: 6000, conversiones: 500, costo: 2100, ventas: 8820, sesiones_imp: 18000, sesiones_comp: 1080, clicks_espacios: [3200, 1600, 1200], bubble_data: { search: { x: 500, y: 4.6, r: 6 }, home: { x: 1000, y: 1.4, r: 10 }, category: { x: 400, y: 3.1, r: 8 }, checkout: { x: 200, y: 2.0, r: 5 } } },
-            { id: 'shampoo', compañia: 'pg', rubro: 'personal', nombre: 'Camp. Shampoo', impresiones: 80000, clicks: 3300, conversiones: 250, costo: 1400, ventas: 5880, sesiones_imp: 10000, sesiones_comp: 600, clicks_espacios: [1800, 1000, 500], bubble_data: { search: { x: 300, y: 4.3, r: 4 }, home: { x: 700, y: 1.2, r: 6 }, category: { x: 200, y: 2.9, r: 4 }, checkout: { x: 200, y: 1.8, r: 3 } } }
+            { id: 'leche', compañia: 'marca3', rubro: 'lacteos', nombre: 'Camp. Leche', impresiones: 300000, clicks: 11000, conversiones: 770, costo: 3200, ventas: 13440, sesiones_imp: 35000, sesiones_comp: 2100, clicks_espacios: [6000, 2700, 2300], bubble_data: { search: { x: 400, y: 4.8, r: 8 }, home: { x: 1500, y: 1.5, r: 15 }, category: { x: 800, y: 3.2, r: 10 }, checkout: { x: 500, y: 2.1, r: 6 } } },
+            { id: 'yogur', compañia: 'marca3', rubro: 'lacteos', nombre: 'Camp. Yogures', impresiones: 200000, clicks: 7500, conversiones: 600, costo: 2200, ventas: 9240, sesiones_imp: 23000, sesiones_comp: 1380, clicks_espacios: [4000, 1900, 1600], bubble_data: { search: { x: 300, y: 4.5, r: 6 }, home: { x: 1200, y: 1.3, r: 12 }, category: { x: 500, y: 3.0, r: 8 }, checkout: { x: 200, y: 1.9, r: 4 } } },
+            { id: 'queso', compañia: 'marca3', rubro: 'lacteos', nombre: 'Camp. Queso', impresiones: 120000, clicks: 4800, conversiones: 300, costo: 1400, ventas: 5880, sesiones_imp: 15000, sesiones_comp: 900, clicks_espacios: [2600, 1200, 1000], bubble_data: { search: { x: 200, y: 4.2, r: 4 }, home: { x: 800, y: 1.1, r: 8 }, category: { x: 300, y: 2.8, r: 6 }, checkout: { x: 100, y: 1.7, r: 3 } } },
+            { id: 'promo', compañia: 'marca1', rubro: 'personal', nombre: 'Promo Fin de Año', impresiones: 350000, clicks: 13000, conversiones: 1100, costo: 5100, ventas: 21420, sesiones_imp: 41000, sesiones_comp: 2460, clicks_espacios: [7000, 3200, 2800], bubble_data: { search: { x: 800, y: 5.2, r: 10 }, home: { x: 2500, y: 1.8, r: 20 }, category: { x: 1000, y: 3.5, r: 14 }, checkout: { x: 800, y: 2.3, r: 8 } } },
+            { id: 'cafe', compañia: 'marca2', rubro: 'almacen', nombre: 'Promo Marca 2', impresiones: 150000, clicks: 6000, conversiones: 500, costo: 2100, ventas: 8820, sesiones_imp: 18000, sesiones_comp: 1080, clicks_espacios: [3200, 1600, 1200], bubble_data: { search: { x: 500, y: 4.6, r: 6 }, home: { x: 1000, y: 1.4, r: 10 }, category: { x: 400, y: 3.1, r: 8 }, checkout: { x: 200, y: 2.0, r: 5 } } },
+            { id: 'shampoo', compañia: 'marca4', rubro: 'personal', nombre: 'Camp. Shampoo', impresiones: 80000, clicks: 3300, conversiones: 250, costo: 1400, ventas: 5880, sesiones_imp: 10000, sesiones_comp: 600, clicks_espacios: [1800, 1000, 500], bubble_data: { search: { x: 300, y: 4.3, r: 4 }, home: { x: 700, y: 1.2, r: 6 }, category: { x: 200, y: 2.9, r: 4 }, checkout: { x: 200, y: 1.8, r: 3 } } }
         ];
         const initialSupplierData = { lacteos: [2000, 0, 15000, 0], almacen: [5000, 18000, 3000, 2000], personal: [22000, 0, 0, 14000] };
         const temporalSalesData = {
@@ -474,7 +491,9 @@
         ];
 
         let highFunnelChart, audiencePieChart, midFunnelChart, spaceTypeChart, supplierSectorChart, costPerfChart, lowFunnelChart, citrusVsTotalChart, tsTrafficChart, tsSalesChart;
+        let digitalCatCompChart; // NUEVO DIGITAL
         let instoreTemporalChart, instoreGenderChart, instoreAgeChart;
+        let instoreCatCompChart; // NUEVO INSTORE
         let currentLowFunnelMetric = 'con-tasa';
         let instoreChartsRendered = false;
 
@@ -524,12 +543,25 @@
             audiencePieChart = new Chart(document.getElementById('audiencePieChart').getContext('2d'), { type: 'doughnut', data: { labels: ['Smart Shoppers', 'Brand Loyalists', 'Impulsivos', 'Inactivos'], datasets: [{ data: [40, 25, 20, 15], backgroundColor: [cBlue, cMag, cDark, '#cbd5e1'], borderWidth: 2, borderColor: '#ffffff' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
             midFunnelChart = new Chart(document.getElementById('midFunnelChart').getContext('2d'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Clicks', data: [], backgroundColor: cLight }, { label: 'Conv.', data: [], backgroundColor: cDark }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { display: false } } } } });
             spaceTypeChart = new Chart(document.getElementById('spaceTypeChart').getContext('2d'), { type: 'doughnut', data: { labels: ['Banner Principal', 'Banner Secundario', 'Banner Categoría'], datasets: [{ data: [], backgroundColor: [cBlue, cLight, '#cbd5e1'], borderWidth: 2, borderColor: '#ffffff' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
-            supplierSectorChart = new Chart(document.getElementById('supplierSectorChart').getContext('2d'), { type: 'bar', data: { labels: ['Unilever', 'Nestlé', 'Danone', 'P&G'], datasets: [{ label: 'Lácteos', data: [], backgroundColor: cBlue }, { label: 'Almacén', data: [], backgroundColor: cLight }, { label: 'Cuidado Personal', data: [], backgroundColor: cMag }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } } });
+            supplierSectorChart = new Chart(document.getElementById('supplierSectorChart').getContext('2d'), { type: 'bar', data: { labels: ['Marca 1', 'Marca 2', 'Marca 3', 'Marca 4'], datasets: [{ label: 'Lácteos', data: [], backgroundColor: cBlue }, { label: 'Almacén', data: [], backgroundColor: cLight }, { label: 'Cuidado Personal', data: [], backgroundColor: cMag }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } } });
             costPerfChart = new Chart(document.getElementById('costPerformanceChart').getContext('2d'), { type: 'bubble', data: { datasets: [{ label: 'Banner Home', data: [], backgroundColor: 'rgba(216, 0, 138, 0.6)', borderColor: cMag, borderWidth: 1.5 }, { label: 'Search', data: [], backgroundColor: 'rgba(0, 56, 255, 0.6)', borderColor: cBlue, borderWidth: 1.5 }, { label: 'Categoría', data: [], backgroundColor: 'rgba(15, 10, 46, 0.6)', borderColor: cDark, borderWidth: 1.5 }, { label: 'Checkout', data: [], backgroundColor: 'rgba(75, 152, 229, 0.6)', borderColor: cLight, borderWidth: 1.5 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { title: { display: true, text: 'Inversión ($)' } }, y: { title: { display: true, text: 'CTR (%)' } } } } });
             lowFunnelChart = new Chart(document.getElementById('lowFunnelChart').getContext('2d'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Ventas', data: [], backgroundColor: [cBlue, cMag, cDark, cLight], borderRadius: 6 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
             citrusVsTotalChart = new Chart(document.getElementById('citrusVsTotalChart').getContext('2d'), { type: 'bar', data: { labels: ['Leche Entera', 'Yogur Frutilla', 'Queso Crema'], datasets: [{ label: 'Total DB', data: [65000, 48000, 21000], backgroundColor: '#cbd5e1' }, { label: 'Atribuido Citrus', data: [16200, 11200, 8100], backgroundColor: cBlue }] }, options: { responsive: true, maintainAspectRatio: false } });
             tsTrafficChart = new Chart(document.getElementById('tsTrafficChart').getContext('2d'), { type: 'line', data: { labels: ['Abr', 'May', 'Jun'], datasets: [{ label: 'Sesiones', data: [68, 82, 99], borderColor: cMag, tension: 0 }, { label: 'Usuarios', data: [51, 64, 74], backgroundColor: cLight, type: 'bar' }] }, options: { responsive: true, maintainAspectRatio: false } });
             tsSalesChart = new Chart(document.getElementById('tsSalesChart').getContext('2d'), { type: 'bar', data: { labels: ['Abr', 'May', 'Jun'], datasets: [{ label: 'Ventas ($)', data: [105, 128, 146], backgroundColor: cDark }] }, options: { responsive: true, maintainAspectRatio: false } });
+
+            // NUEVO DIGITAL: Comportamiento por Categoría
+            digitalCatCompChart = new Chart(document.getElementById('digitalCatCompChart').getContext('2d'), { 
+                type: 'bar', 
+                data: { 
+                    labels: ['Lácteos', 'Almacén', 'Cuidado Personal'], 
+                    datasets: [
+                        { label: 'Publicitados', data: [134000, 8820, 27300], backgroundColor: cMag }, 
+                        { label: 'Resto Orgánico', data: [320000, 150000, 110000], backgroundColor: cDark }
+                    ] 
+                }, 
+                options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } } 
+            });
 
             // RUN FILTERS TO POPULATE DATA
             applyMidFunnelFilters();
@@ -544,6 +576,14 @@
             instoreTemporalChart = new Chart(document.getElementById('instoreTemporalChart').getContext('2d'), { type: 'bar', data: { labels: ['S1', 'S2', 'S3', 'S4'], datasets: [{ label: 'Venta Test', data: [], backgroundColor: cBlue, order: 2 }, { label: 'Venta Control', data: [], backgroundColor: cMag, order: 3 }, { label: 'YoY', data: [], borderColor: cDark, type: 'line', tension: 0, borderDash: [5,5], order: 1 }] }, options: { responsive: true, maintainAspectRatio: false } });
             instoreGenderChart = new Chart(document.getElementById('instoreGenderChart').getContext('2d'), { type: 'doughnut', data: { labels: ['Fem', 'Masc'], datasets: [{ data: [65, 35], backgroundColor: [cMag, cDark], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false } } } });
             instoreAgeChart = new Chart(document.getElementById('instoreAgeChart').getContext('2d'), { type: 'bar', data: { labels: ['18-24', '25-34', '35-44', '45+'], datasets: [{ data: [12, 38, 25, 25], backgroundColor: cBlue }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false } } } });
+            
+            // NUEVO INSTORE: Comportamiento por Categoría
+            instoreCatCompChart = new Chart(document.getElementById('instoreCatCompChart').getContext('2d'), { 
+                type: 'bar', 
+                data: { labels: [], datasets: [{ label: 'Publicitados', data: [], backgroundColor: cBlue }, { label: 'Resto Orgánico', data: [], backgroundColor: cLight }] }, 
+                options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } } 
+            });
+
             instoreChartsRendered = true;
         }
 
@@ -571,7 +611,7 @@
             const ctr = totalImp > 0 ? ((totalClicks / totalImp) * 100).toFixed(1) : "0.0";
             const roas = totalCost > 0 ? (totalSales / totalCost).toFixed(1) : "0.0";
             
-            document.getElementById('kpi-impressions').innerText = totalImp >= 1000000 ? (totalImp / 1000000).toFixed(1) + 'M' : totalImp;
+            document.getElementById('kpi-impressions').innerText = totalImp >= 1000000 ? (totalImp / 1000000).toFixed(1) + 'M' : totalImp.toLocaleString();
             document.getElementById('kpi-clicks-ctr').innerText = (totalClicks >= 1000 ? (totalClicks / 1000).toFixed(1) + 'K' : totalClicks) + ` (${ctr}%)`;
             document.getElementById('kpi-cost').innerText = `$${totalCost.toLocaleString('en-US')}`;
             document.getElementById('kpi-roas').innerText = `${roas}x`;
@@ -589,7 +629,7 @@
             spaceTypeChart.data.datasets[0].data = [pClicks, sClicks, cClicks]; spaceTypeChart.update();
 
             let sup = JSON.parse(JSON.stringify(initialSupplierData));
-            if (compVal !== 'todos') { const idx = ['unilever', 'nestle', 'danone', 'pg'].indexOf(compVal); ['lacteos', 'almacen', 'personal'].forEach(k => { for (let i=0; i<4; i++) if (i!==idx) sup[k][i]=0; }); }
+            if (compVal !== 'todos') { const idx = ['marca1', 'marca2', 'marca3', 'marca4'].indexOf(compVal); ['lacteos', 'almacen', 'personal'].forEach(k => { for (let i=0; i<4; i++) if (i!==idx) sup[k][i]=0; }); }
             if (rubroVal !== 'todos') { ['lacteos', 'almacen', 'personal'].forEach(k => { if (k!==rubroVal) sup[k]=[0,0,0,0]; }); }
             supplierSectorChart.data.datasets[0].data = sup.lacteos; supplierSectorChart.data.datasets[1].data = sup.almacen; supplierSectorChart.data.datasets[2].data = sup.personal; supplierSectorChart.update();
 
@@ -613,38 +653,79 @@
             let labels = [], chartData = [];
             let p = currentLowFunnelMetric === 'unidades' ? '' : '$', s = currentLowFunnelMetric === 'unidades' ? ' U' : '';
 
+            // 1. UPDATE BARRAS HORIZONTALES
             if (groupBy === 'ean') {
                 labels = ['Leche Entera', 'Yogur Frutilla', 'Queso Crema'];
                 chartData = currentLowFunnelMetric === 'con-tasa' ? [65000, 48000, 21000] : (currentLowFunnelMetric === 'sin-tasa' ? [53719, 39696, 17367] : [43300, 24000, 7000]);
-                if (campaign === 'leche') chartData = [chartData[0], 0, 0]; else if (campaign !== 'todas') chartData = [0,0,0];
+                if (campaign === 'leche') chartData = [chartData[0], 0, 0]; else if (campaign === 'yogur') chartData = [0, chartData[1], 0]; else if (campaign === 'queso') chartData = [0, 0, chartData[2]]; else if (campaign !== 'todas') chartData = [0,0,0];
             } else if (groupBy === 'categoria') {
                 labels = ['Lácteos', 'Almacén / Bebidas', 'Cuidado Personal'];
                 chartData = currentLowFunnelMetric === 'con-tasa' ? [134000, 8820, 27300] : (currentLowFunnelMetric === 'sin-tasa' ? [110782, 7289, 22559] : [74300, 6000, 3300]);
-                if (campaign === 'leche') chartData = [chartData[0], 0, 0]; else if (campaign !== 'todas') chartData = [0,0,0];
+                if (campaign === 'leche' || campaign === 'yogur' || campaign === 'queso') chartData = [chartData[0], 0, 0]; else if (campaign === 'cafe') chartData = [0, chartData[1], 0]; else if (campaign === 'shampoo' || campaign === 'promo') chartData = [0, 0, chartData[2]];
             } else if (groupBy === 'proveedor') {
-                labels = ['Unilever', 'Nestlé', 'Danone', 'P&G'];
+                labels = ['Marca 1', 'Marca 2', 'Marca 3', 'Marca 4'];
                 chartData = currentLowFunnelMetric === 'con-tasa' ? [21420, 8820, 134000, 5880] : (currentLowFunnelMetric === 'sin-tasa' ? [17701, 7289, 110782, 4856] : [13000, 6000, 74300, 3300]);
-                if (campaign === 'leche') chartData = [0, 0, chartData[2], 0]; else if (campaign !== 'todas') chartData = [0,0,0,0];
+                if (campaign === 'leche' || campaign === 'yogur' || campaign === 'queso') chartData = [0, 0, chartData[2], 0]; else if (campaign === 'promo') chartData = [chartData[0], 0, 0, 0]; else if (campaign === 'cafe') chartData = [0, chartData[1], 0, 0]; else if (campaign === 'shampoo') chartData = [0, 0, 0, chartData[3]];
             }
-
             lowFunnelChart.data.labels = labels; lowFunnelChart.data.datasets[0].data = chartData; lowFunnelChart.update();
+            
             let sum = chartData.reduce((a,b) => a+b, 0);
             document.getElementById('low-chart-total-legend').innerHTML = `<div class="flex items-center justify-between bg-slate-50 border p-3 rounded text-xs"><span class="font-bold">TOTAL:</span><span class="font-mono text-brand-900 font-bold">${p}${sum.toLocaleString()}${s}</span></div>`;
+
+            // 2. UPDATE GRAFICO SHARE DE CATEGORIA DIGITAL
+            let catLabels = ['Lácteos', 'Almacén', 'Cuidado Personal'];
+            let catPub = [134000, 8820, 27300];
+            let catOrg = [320000, 150000, 110000];
+
+            if (campaign === 'leche' || campaign === 'yogur' || campaign === 'queso') {
+                catLabels = ['Lácteos']; catPub = [134000]; catOrg = [320000];
+            } else if (campaign === 'cafe') {
+                catLabels = ['Almacén']; catPub = [8820]; catOrg = [150000];
+            } else if (campaign === 'promo' || campaign === 'shampoo') {
+                catLabels = ['Cuidado Personal']; catPub = [27300]; catOrg = [110000];
+            }
+            digitalCatCompChart.data.labels = catLabels;
+            digitalCatCompChart.data.datasets[0].data = catPub;
+            digitalCatCompChart.data.datasets[1].data = catOrg;
+            digitalCatCompChart.update();
+
+            // 3. UPDATE CITRUS BAR CHART
+            let cLabels = ['Leche Entera', 'Yogur Frutilla', 'Queso Crema'];
+            let cTotal = [65000, 48000, 21000];
+            let cCitrus = [16200, 11200, 8100];
+            if (campaign === 'leche') { cLabels = [cLabels[0]]; cTotal = [cTotal[0]]; cCitrus = [cCitrus[0]]; }
+            else if (campaign === 'yogur') { cLabels = [cLabels[1]]; cTotal = [cTotal[1]]; cCitrus = [cCitrus[1]]; }
+            else if (campaign === 'queso') { cLabels = [cLabels[2]]; cTotal = [cTotal[2]]; cCitrus = [cCitrus[2]]; }
+            else if (campaign !== 'todas') { cLabels = []; cTotal = []; cCitrus = []; }
+            
+            citrusVsTotalChart.data.labels = cLabels;
+            citrusVsTotalChart.data.datasets[0].data = cTotal;
+            citrusVsTotalChart.data.datasets[1].data = cCitrus;
+            citrusVsTotalChart.update();
+
+            // 4. UPDATE TABLE ROWS
+            const tbody = document.getElementById('temporal-sales-tbody'); tbody.innerHTML = '';
+            temporalSalesData[currentLowFunnelMetric].forEach((r, index) => {
+                let show = true;
+                if (campaign === 'leche' && index !== 0) show = false;
+                if (campaign === 'yogur' && index !== 1) show = false;
+                if (campaign === 'queso' && index !== 2) show = false;
+                if (['promo', 'cafe', 'shampoo'].includes(campaign)) show = false; // Mock data does not have these in table
+                
+                if(show) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td class="py-3 text-xs font-bold">${r.name}</td><td class="py-3 text-right font-mono font-bold">${r.actual}</td><td class="py-3 text-right font-mono ${r.momUp?'text-green-600':'text-red-500'}">${r.mom}</td><td class="py-3 text-right font-mono ${r.yoyUp?'text-green-600':'text-red-500'}">${r.yoy}</td><td class="py-3 text-right font-mono">${r.citrus}</td><td class="py-3 text-right font-bold text-brand-500">${r.share}</td>`;
+                    tbody.appendChild(tr);
+                }
+            });
         }
 
         function switchLowFunnelMetric(metricKey) {
             currentLowFunnelMetric = metricKey;
             document.querySelectorAll('#low-funnel-metric-tabs button').forEach(btn => btn.className = "px-3 py-1.5 rounded text-xs font-medium text-slate-600 transition-all");
             document.getElementById(`metric-btn-${metricKey}`).className = "px-3 py-1.5 rounded text-xs font-semibold bg-white text-brand-900 shadow-sm transition-all";
-            
-            const tbody = document.getElementById('temporal-sales-tbody'); tbody.innerHTML = '';
-            temporalSalesData[metricKey].forEach(r => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td class="py-3 text-xs font-bold">${r.name}</td><td class="py-3 text-right font-mono font-bold">${r.actual}</td><td class="py-3 text-right font-mono ${r.momUp?'text-green-600':'text-red-500'}">${r.mom}</td><td class="py-3 text-right font-mono ${r.yoyUp?'text-green-600':'text-red-500'}">${r.yoy}</td><td class="py-3 text-right font-mono">${r.citrus}</td><td class="py-3 text-right font-bold text-brand-500">${r.share}</td>`;
-                tbody.appendChild(tr);
-            });
             document.getElementById('th-current-val').innerText = metricKey === 'unidades' ? 'Volumen' : 'Venta Actual';
-            updateLowFunnelView();
+            updateLowFunnelView(); // Will re-render table with correct campaign filters
         }
 
         function updateCampaignFunnel(campaignKey) {
@@ -655,9 +736,29 @@
 
         function updateTimeSeriesCharts() {
             const d = document.getElementById('ts-filter-date').value;
+            const category = document.getElementById('ts-filter-category').value;
+            const supplier = document.getElementById('ts-filter-supplier').value;
+
             let labels = d === '4weeks' ? ['S1', 'S2', 'S3', 'S4'] : ['Abr', 'May', 'Jun'];
-            tsTrafficChart.data.labels = labels; tsTrafficChart.data.datasets[0].data = d === '4weeks' ? [15, 24, 32, 28] : [68, 82, 99]; tsTrafficChart.data.datasets[1].data = d === '4weeks' ? [11, 18, 24, 21] : [51, 64, 74]; tsTrafficChart.update();
-            tsSalesChart.data.labels = labels; tsSalesChart.data.datasets[0].data = d === '4weeks' ? [22, 35, 48, 41] : [105, 128, 146]; tsSalesChart.update();
+            let sessionsData = d === '4weeks' ? [15, 24, 32, 28] : [68, 82, 99]; 
+            let activeUsersData = d === '4weeks' ? [11, 18, 24, 21] : [51, 64, 74]; 
+            let salesDBData = d === '4weeks' ? [22, 35, 48, 41] : [105, 128, 146];
+            
+            let factor = 1.0;
+            if (category === 'lacteos') factor *= 0.55; 
+            else if (category === 'almacen') factor *= 0.25;
+            
+            if (supplier === 'marca3') factor *= 0.45; 
+            else if (supplier === 'marca1') factor *= 0.30;
+            
+            tsTrafficChart.data.labels = labels; 
+            tsTrafficChart.data.datasets[0].data = sessionsData.map(v => Math.round(v * factor)); 
+            tsTrafficChart.data.datasets[1].data = activeUsersData.map(v => Math.round(v * factor)); 
+            tsTrafficChart.update();
+            
+            tsSalesChart.data.labels = labels; 
+            tsSalesChart.data.datasets[0].data = salesDBData.map(v => Math.round(v * factor)); 
+            tsSalesChart.update();
         }
 
         // ==========================================
@@ -666,35 +767,59 @@
         function applyInstoreFilters() {
             if(!instoreChartsRendered) return;
             const camp = document.getElementById('instore-filter-campaign').value;
-            const isGillette = camp === 'gillette';
+            const isMarca6 = camp === 'marca6';
             const fmt = document.getElementById('instore-filter-format').value;
             const reg = document.getElementById('instore-filter-region').value;
 
+            // Fictional multiplier to simulate data shifts on region/format
+            let mCamp = isMarca6 ? 0.6 : 1.0;
+            let mReg = reg === 'nacional' ? 1.0 : (reg === 'amba' ? 0.6 : 0.4);
+            let mForm = fmt === 'todos' ? 1.0 : (fmt === 'hiper' ? 0.41 : (fmt === 'market' ? 0.27 : (fmt === 'express' ? 0.20 : 0.12)));
+            let totalMult = mCamp * mReg * mForm;
+
             // Update KPIs
-            document.getElementById('instore-compliance-pct').innerText = isGillette ? "92.1%" : "88.5%";
-            document.getElementById('instore-uplift-pct').innerText = isGillette ? "+10.5%" : "+14.2%";
-            document.getElementById('instore-sales-test').innerText = isGillette ? "$28.4M" : "$45.2M";
-            document.getElementById('instore-sales-control').innerText = isGillette ? "vs $25.7M" : "vs $39.5M";
+            document.getElementById('instore-compliance-pct').innerText = isMarca6 ? "92.1%" : "88.5%";
+            document.getElementById('instore-uplift-pct').innerText = isMarca6 ? "+10.5%" : "+14.2%";
+            document.getElementById('instore-sales-test').innerText = isMarca6 ? `$${(28.4 * mReg * mForm).toFixed(1)}M` : `$${(45.2 * mReg * mForm).toFixed(1)}M`;
+            document.getElementById('instore-sales-control').innerText = isMarca6 ? `vs $${(25.7 * mReg * mForm).toFixed(1)}M` : `vs $${(39.5 * mReg * mForm).toFixed(1)}M`;
             
             // Update Maps
-            document.getElementById('map-amba-val').innerText = isGillette ? "90%" : "85%"; document.getElementById('map-amba-bar').style.width = isGillette ? "90%" : "85%";
-            document.getElementById('map-centro-val').innerText = isGillette ? "70%" : "65%"; document.getElementById('map-centro-bar').style.width = isGillette ? "70%" : "65%";
-            document.getElementById('map-cuyo-val').innerText = isGillette ? "45%" : "40%"; document.getElementById('map-cuyo-bar').style.width = isGillette ? "45%" : "40%";
-            document.getElementById('map-noa-val').innerText = isGillette ? "30%" : "25%"; document.getElementById('map-noa-bar').style.width = isGillette ? "30%" : "25%";
+            document.getElementById('map-amba-val').innerText = isMarca6 ? "90%" : "85%"; document.getElementById('map-amba-bar').style.width = isMarca6 ? "90%" : "85%";
+            document.getElementById('map-centro-val').innerText = isMarca6 ? "70%" : "65%"; document.getElementById('map-centro-bar').style.width = isMarca6 ? "70%" : "65%";
+            document.getElementById('map-cuyo-val').innerText = isMarca6 ? "45%" : "40%"; document.getElementById('map-cuyo-bar').style.width = isMarca6 ? "45%" : "40%";
+            document.getElementById('map-noa-val').innerText = isMarca6 ? "30%" : "25%"; document.getElementById('map-noa-bar').style.width = isMarca6 ? "30%" : "25%";
 
             // Update Temporal Chart
-            instoreTemporalChart.data.datasets[0].data = isGillette ? [9, 10, 8, 11] : [12.5, 14.2, 11.0, 13.8];
-            instoreTemporalChart.data.datasets[1].data = isGillette ? [8.5, 9, 7.5, 9] : [11.0, 12.1, 10.5, 11.2];
-            instoreTemporalChart.data.datasets[2].data = isGillette ? [7, 8.5, 7, 8] : [8, 9, 7.5, 8.5];
+            let dTest = isMarca6 ? [9, 10, 8, 11] : [12.5, 14.2, 11.0, 13.8];
+            let dControl = isMarca6 ? [8.5, 9, 7.5, 9] : [11.0, 12.1, 10.5, 11.2];
+            let dYoY = isMarca6 ? [7, 8.5, 7, 8] : [8, 9, 7.5, 8.5];
+            
+            instoreTemporalChart.data.datasets[0].data = dTest.map(v => Number((v*mReg*mForm).toFixed(1)));
+            instoreTemporalChart.data.datasets[1].data = dControl.map(v => Number((v*mReg*mForm).toFixed(1)));
+            instoreTemporalChart.data.datasets[2].data = dYoY.map(v => Number((v*mReg*mForm).toFixed(1)));
             instoreTemporalChart.update();
+            
+            // Update Category Comparison Chart (InStore)
+            if(isMarca6) {
+                instoreCatCompChart.data.labels = ['Cuid. Personal (S1)', 'Cuid. Personal (S2)', 'Cuid. Personal (S3)', 'Cuid. Personal (S4)'];
+                instoreCatCompChart.data.datasets[0].data = [15000*totalMult, 18000*totalMult, 14000*totalMult, 20000*totalMult];
+                instoreCatCompChart.data.datasets[1].data = [45000*totalMult, 42000*totalMult, 48000*totalMult, 40000*totalMult];
+            } else {
+                instoreCatCompChart.data.labels = ['Bebidas (S1)', 'Bebidas (S2)', 'Bebidas (S3)', 'Bebidas (S4)'];
+                instoreCatCompChart.data.datasets[0].data = [25000*totalMult, 28000*totalMult, 22000*totalMult, 30000*totalMult];
+                instoreCatCompChart.data.datasets[1].data = [80000*totalMult, 75000*totalMult, 85000*totalMult, 70000*totalMult];
+            }
+            instoreCatCompChart.update();
 
             // Update Table
             const tbody = document.getElementById('instore-table-body'); tbody.innerHTML = '';
             let filteredFormats = fmt === 'todos' ? instoreFormatsData : instoreFormatsData.filter(f => f.id === fmt);
             filteredFormats.forEach(r => {
-                let up = isGillette ? (r.up * 0.8).toFixed(1) : r.up.toFixed(1);
+                let up = isMarca6 ? (r.up * 0.8).toFixed(1) : r.up.toFixed(1);
+                let rT = (r.baseT * mCamp * mReg).toFixed(1);
+                let rC = (r.baseC * mCamp * mReg).toFixed(1);
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td class="py-3 text-xs font-bold">${r.name}</td><td class="py-3 text-right font-mono font-bold">$${r.baseT}M</td><td class="py-3 text-right font-mono text-slate-500">$${r.baseC}M</td><td class="py-3 text-right font-mono font-bold text-brand-magenta">+${up}%</td><td class="py-3 text-right font-mono ${r.pop>0?'text-green-600':'text-red-500'}">${r.pop}%</td><td class="py-3 text-right font-mono ${r.yoy>0?'text-green-600':'text-red-500'}">${r.yoy}%</td>`;
+                tr.innerHTML = `<td class="py-3 text-xs font-bold">${r.name}</td><td class="py-3 text-right font-mono font-bold">$${rT}M</td><td class="py-3 text-right font-mono text-slate-500">$${rC}M</td><td class="py-3 text-right font-mono font-bold text-brand-magenta">+${up}%</td><td class="py-3 text-right font-mono ${r.pop>0?'text-green-600':'text-red-500'}">${r.pop}%</td><td class="py-3 text-right font-mono ${r.yoy>0?'text-green-600':'text-red-500'}">${r.yoy}%</td>`;
                 tbody.appendChild(tr);
             });
         }
@@ -702,16 +827,20 @@
         function applyInstoreShopperFilters() {
             if(!instoreChartsRendered) return;
             const camp = document.getElementById('instore-shopper-filter-campaign').value;
-            const isGillette = camp === 'gillette';
+            const dateStr = document.getElementById('instore-shopper-filter-date').value;
+            const isMarca6 = camp === 'marca6';
             
-            instoreGenderChart.data.datasets[0].data = isGillette ? [20, 80] : [65, 35];
-            document.getElementById('instore-gender-f').innerText = isGillette ? "F: 20%" : "F: 65%";
-            document.getElementById('instore-gender-m').innerText = isGillette ? "M: 80%" : "M: 35%";
-            document.getElementById('instore-ticket-avg').innerText = isGillette ? "$18,500" : "$24,350";
-            
-            instoreAgeChart.data.datasets[0].data = isGillette ? [15, 45, 20, 20] : [12, 38, 25, 25];
+            let dateMult = dateStr === 'last_month' ? 0.85 : 1.0;
 
-            document.getElementById('instore-basket-body').innerHTML = isGillette 
+            instoreGenderChart.data.datasets[0].data = isMarca6 ? [20, 80] : [65, 35];
+            document.getElementById('instore-gender-f').innerText = isMarca6 ? "F: 20%" : "F: 65%";
+            document.getElementById('instore-gender-m').innerText = isMarca6 ? "M: 80%" : "M: 35%";
+            
+            document.getElementById('instore-ticket-avg').innerText = "$" + Math.round((isMarca6 ? 18500 : 24350) * dateMult).toLocaleString();
+            
+            instoreAgeChart.data.datasets[0].data = isMarca6 ? [15, 45, 20, 20] : [12, 38, 25, 25];
+
+            document.getElementById('instore-basket-body').innerHTML = isMarca6 
                 ? `<tr><td class="py-3 font-bold text-brand-900">Espuma Afeitar</td><td class="py-3 text-right font-bold text-brand-magenta">55.2%</td></tr><tr><td class="py-3 font-bold text-brand-900">Shampoo Men</td><td class="py-3 text-right font-bold text-brand-magenta">32.4%</td></tr>`
                 : `<tr><td class="py-3 font-bold text-brand-900">Snacks (Papas)</td><td class="py-3 text-right font-bold text-brand-magenta">42.5%</td></tr><tr><td class="py-3 font-bold text-brand-900">Hielo</td><td class="py-3 text-right font-bold text-brand-magenta">28.1%</td></tr>`;
             
