@@ -1115,7 +1115,7 @@
             tsSalesChart.update();
         }
 
-        // FUNCIONES FILTROS INSTORE
+        // FUNCIONES FILTROS INSTORE DINÁMICOS Y CONECTADOS
         function applyInstoreFilters() {
             if(!instoreChartsRendered) return;
             const camp = document.getElementById('instore-filter-campaign').value;
@@ -1127,10 +1127,21 @@
             let mReg = reg === 'nacional' ? 1.0 : (reg === 'amba' ? 0.6 : 0.4);
             let mForm = fmt === 'todos' ? 1.0 : (fmt === 'hiper' ? 0.41 : (fmt === 'market' ? 0.27 : (fmt === 'express' ? 0.20 : 0.12)));
 
-            document.getElementById('instore-uplift-pct').innerText = isMarca6 ? "+10.5%" : "+14.2%";
-            document.getElementById('instore-sales-test').innerText = isMarca6 ? `${(28.4 * mReg * mForm).toFixed(1)}K U` : `${(45.2 * mReg * mForm).toFixed(1)}K U`;
-            document.getElementById('instore-sales-control').innerText = isMarca6 ? `vs ${(25.7 * mReg * mForm).toFixed(1)}K U Control` : `vs ${(39.5 * mReg * mForm).toFixed(1)}K U Control`;
+            // RECALCULO DE UPLIFT % Y UNIDADES TEST VS CONTROL
+            let baseUplift = isMarca6 ? 10.5 : 14.2;
+            if (fmt === 'hiper') baseUplift += 2.9;
+            else if (fmt === 'express') baseUplift -= 1.8;
+            if (reg === 'amba') baseUplift -= 2.0;
+            else if (reg === 'centro') baseUplift += 1.5;
+
+            let testVal = (45.2 * mCamp * mReg * mForm).toFixed(1);
+            let controlVal = (39.5 * mCamp * mReg * mForm).toFixed(1);
+
+            document.getElementById('instore-uplift-pct').innerText = `+${baseUplift.toFixed(1)}%`;
+            document.getElementById('instore-sales-test').innerText = `${testVal}K U`;
+            document.getElementById('instore-sales-control').innerText = `vs ${controlVal}K U Control`;
             
+            // MAPA DE REGIONES
             document.getElementById('map-noa-val').innerText = isMarca6 ? "+24.0%" : "+28.5%"; 
             document.getElementById('map-noa-bar').style.width = isMarca6 ? "75%" : "85%";
             
@@ -1143,6 +1154,7 @@
             document.getElementById('map-amba-val').innerText = isMarca6 ? "+6.5%" : "+8.2%"; 
             document.getElementById('map-amba-bar').style.width = isMarca6 ? "20%" : "25%";
 
+            // GRÁFICO TEMPORAL DE UNIDADES
             let dTest = isMarca6 ? [9, 10, 8, 11] : [12.5, 14.2, 11.0, 13.8];
             let dControl = isMarca6 ? [8.5, 9, 7.5, 9] : [11.0, 12.1, 10.5, 11.2];
             let dYoY = isMarca6 ? [7, 8.5, 7, 8] : [8, 9, 7.5, 8.5];
@@ -1152,6 +1164,19 @@
             instoreTemporalChart.data.datasets[2].data = dYoY.map(v => Number((v*mReg*mForm).toFixed(1)));
             instoreTemporalChart.update();
 
+            // GRÁFICO MARKET SHARE EVOLUCIÓN INSTORE (RESPONDE A CAMPAÑA)
+            const msDataKey = isMarca6 ? 'mantecas' : 'total';
+            const msData = instoreMarketShareCategoryData[msDataKey];
+            if (msData) {
+                instoreCatCompChart.data.labels = msData.months;
+                instoreCatCompChart.data.datasets[0].data = msData.ownUnitsPromoted.map(v => Math.round(v * mReg * mForm));
+                instoreCatCompChart.data.datasets[1].data = msData.ownUnitsOrganic.map(v => Math.round(v * mReg * mForm));
+                instoreCatCompChart.data.datasets[2].data = msData.competitorUnits.map(v => Math.round(v * mReg * mForm));
+                instoreCatCompChart.data.datasets[3].data = msData.ranking;
+                instoreCatCompChart.update();
+            }
+
+            // TABLA FORMATOS
             const tbody = document.getElementById('instore-table-body'); tbody.innerHTML = '';
             let filteredFormats = fmt === 'todos' ? instoreFormatsData : instoreFormatsData.filter(f => f.id === fmt);
             filteredFormats.forEach(r => {
