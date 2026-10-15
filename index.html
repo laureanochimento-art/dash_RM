@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js para gráficos interactivos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js Plugin DataLabels para mostrar etiquetas sobre los gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <!-- Tailwind Config con Key Visual Carrefour Media -->
     <script>
         tailwind.config = {
@@ -68,30 +70,30 @@
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col justify-between" onload="initDashboard()">
 
-    <!-- HEADER GLOBAL -->
+    <!-- HEADER GLOBAL (OPTIMIZADO PANTALLA VERTICAL 55") -->
     <header class="bg-white border-b-4 border-brand-magenta shadow-sm sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col xl:flex-row justify-between items-center gap-4">
+        <div class="max-w-4xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-4">
-                <img src="crf_rm.png" alt="Carrefour Media Logo" class="h-10">
+                <img src="crf_rm.png" alt="Carrefour Media Logo" class="h-12">
                 <div>
-                    <h1 class="text-xl font-bold text-brand-900">Tablero Analítico End-to-End</h1>
+                    <h1 class="text-2xl font-bold text-brand-900">Tablero Analítico End-to-End</h1>
                     <span class="text-xs font-semibold tracking-wider text-brand-magenta uppercase">Visión de Desempeño General</span>
                 </div>
             </div>
             
             <div class="flex items-center gap-3 bg-slate-100 p-2 rounded-xl border border-slate-200 shadow-inner">
-                <span id="lbl-digital" class="text-sm font-bold text-brand-900 transition-colors">🌐 Digital</span>
+                <span id="lbl-digital" class="text-base font-bold text-brand-900 transition-colors">🌐 Digital</span>
                 <div class="relative inline-block w-12 h-6 align-middle select-none">
                     <input type="checkbox" id="env-toggle" onchange="toggleEnvironment()" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-slate-300 appearance-none cursor-pointer z-10 top-0 left-0 checked:left-6 checked:border-brand-900"/>
                     <label for="env-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-300 cursor-pointer"></label>
                 </div>
-                <span id="lbl-instore" class="text-sm font-bold text-slate-400 transition-colors">🏪 InStore</span>
+                <span id="lbl-instore" class="text-base font-bold text-slate-400 transition-colors">🏪 InStore</span>
             </div>
         </div>
         
-        <div class="max-w-7xl mx-auto px-6 py-2 border-t border-slate-100 bg-slate-50">
+        <div class="max-w-4xl mx-auto px-6 py-2 border-t border-slate-100 bg-slate-50">
             <!-- TABS DIGITALES -->
-            <nav class="flex flex-wrap gap-2" id="nav-digital">
+            <nav class="flex flex-wrap justify-center sm:justify-start gap-2" id="nav-digital">
                 <button onclick="switchTab('high', 'digital')" id="btn-high" class="tab-btn-dig px-4 py-2 rounded-lg text-sm font-medium transition-all bg-brand-900 text-white shadow-sm">1. Top Funnel</button>
                 <button onclick="switchTab('mid', 'digital')" id="btn-mid" class="tab-btn-dig px-4 py-2 rounded-lg text-sm font-medium transition-all text-slate-600 hover:bg-slate-200">2. Mid Funnel</button>
                 <button onclick="switchTab('low', 'digital')" id="btn-low" class="tab-btn-dig px-4 py-2 rounded-lg text-sm font-medium transition-all text-slate-600 hover:bg-slate-200">3. Low Funnel</button>
@@ -102,14 +104,14 @@
             </nav>
 
             <!-- TABS INSTORE -->
-            <nav class="flex flex-wrap gap-2 hidden" id="nav-instore">
+            <nav class="flex flex-wrap justify-center sm:justify-start gap-2 hidden" id="nav-instore">
                 <button onclick="switchTab('instore-perf', 'instore')" id="btn-instore-perf" class="tab-btn-ins px-4 py-2 rounded-lg text-sm font-medium transition-all bg-brand-900 text-white shadow-sm">1. Análisis & Uplift</button>
                 <button onclick="switchTab('instore-shopper', 'instore')" id="btn-instore-shopper" class="tab-btn-ins px-4 py-2 rounded-lg text-sm font-medium transition-all text-slate-600 hover:bg-slate-200">2. Shopper & Ticket</button>
             </nav>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-8 flex-grow w-full">
+    <main class="max-w-4xl mx-auto px-6 py-8 flex-grow w-full">
 
         <!-- ========================================== -->
         <!-- ENTORNO DIGITAL -->
@@ -122,46 +124,44 @@
                     <h2 class="text-2xl font-bold text-brand-900">Top Funnel: Tráfico en Sitio y Audiencias</h2>
                     <p class="text-slate-600 font-medium text-xs uppercase tracking-wide mt-1">Paso 1 del Embudo de Conversión</p>
                 </div>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-slate-800 mb-4">Tendencia de Sesiones vs. Usuarios Activos</h3>
+                <div class="grid grid-cols-1 gap-6">
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="font-bold text-slate-800 mb-4 text-lg">Tendencia de Sesiones vs. Usuarios Activos</h3>
                         <div class="h-80"><canvas id="highFunnelChart"></canvas></div>
                     </div>
                     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
-                        <h3 class="font-bold text-slate-800 mb-2">Tráfico por Producto (Top EANs)</h3>
+                        <h3 class="font-bold text-slate-800 mb-2 text-lg">Tráfico por Producto (Top EANs)</h3>
                         <div class="overflow-x-auto mt-4">
                             <table class="w-full text-left text-sm">
                                 <thead>
                                     <tr class="text-brand-900 text-xs uppercase border-b-2 border-brand-100"><th class="pb-2 font-bold">EAN / Producto</th><th class="pb-2 font-bold text-right">Sesiones</th></tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100 text-slate-700">
-                                    <tr><td class="py-3 font-medium text-xs">779123456001 (Leche Ent.)</td><td class="py-3 text-right font-bold text-brand-500">45,210</td></tr>
-                                    <tr><td class="py-3 font-medium text-xs">779123456002 (Yogur Frut.)</td><td class="py-3 text-right font-bold text-brand-500">32,150</td></tr>
-                                    <tr><td class="py-3 font-medium text-xs">779123456003 (Queso Crem.)</td><td class="py-3 text-right font-bold text-brand-500">18,900</td></tr>
+                                    <tr><td class="py-3 font-medium text-xs">779123456001 (Leche Ent.)</td><td class="py-3 text-right font-bold text-brand-500 text-base">45,210</td></tr>
+                                    <tr><td class="py-3 font-medium text-xs">779123456002 (Yogur Frut.)</td><td class="py-3 text-right font-bold text-brand-500 text-base">32,150</td></tr>
+                                    <tr><td class="py-3 font-medium text-xs">779123456003 (Queso Crem.)</td><td class="py-3 text-right font-bold text-brand-500 text-base">18,900</td></tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
-                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                    <h3 class="font-bold text-slate-800 text-lg mb-4">Métricas Clave de Audiencia y Segmentación</h3>
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                        <div class="lg:col-span-5 grid grid-cols-2 gap-4">
-                            <div class="bg-brand-50 p-4 rounded-xl border border-brand-100"><span class="text-[10px] text-brand-500 font-bold uppercase block">Clientes Nvs vs Rec</span><p class="text-xl font-extrabold text-slate-900">32% / 68%</p></div>
-                            <div class="bg-brand-50 p-4 rounded-xl border border-brand-100"><span class="text-[10px] text-brand-500 font-bold uppercase block">Frecuencia Compra</span><p class="text-xl font-extrabold text-slate-900">3.4/mes</p></div>
-                            <div class="bg-brand-50 p-4 rounded-xl border border-brand-100"><span class="text-[10px] text-brand-500 font-bold uppercase block">Ticket Promedio</span><p class="text-xl font-extrabold text-slate-900">$14,250</p></div>
-                            <div class="bg-brand-50 p-4 rounded-xl border border-brand-100"><span class="text-[10px] text-brand-500 font-bold uppercase block">Loyalty Club</span><p class="text-xl font-extrabold text-slate-900">54.2%</p></div>
-                        </div>
-                        <div class="lg:col-span-7 bg-slate-50 p-4 rounded-xl border border-slate-100 flex flex-col justify-between">
-                            <span class="text-xs font-bold text-slate-700 uppercase mb-2">Composición de Audiencia Activa</span>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-                                <div class="h-44 flex items-center justify-center"><canvas id="audiencePieChart"></canvas></div>
-                                <div class="space-y-2 text-xs">
-                                    <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full" style="background:#0038ff"></span>Smart Shoppers</span><span class="font-bold">40%</span></div>
-                                    <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full" style="background:#d8008a"></span>Brand Loyalists</span><span class="font-bold">25%</span></div>
-                                    <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full" style="background:#0f0a2e"></span>Impulsivos</span><span class="font-bold">20%</span></div>
-                                    <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full" style="background:#cbd5e1"></span>Inactivos</span><span class="font-bold">15%</span></div>
-                                </div>
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
+                    <h3 class="font-bold text-slate-800 text-xl">Métricas Clave de Audiencia y Segmentación</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div class="bg-brand-50 p-4 rounded-xl border border-brand-100"><span class="text-[11px] text-brand-500 font-bold uppercase block">Clientes Nvs vs Rec</span><p class="text-2xl font-extrabold text-slate-900 mt-1">32% / 68%</p></div>
+                        <div class="bg-brand-50 p-4 rounded-xl border border-brand-100"><span class="text-[11px] text-brand-500 font-bold uppercase block">Frecuencia Compra</span><p class="text-2xl font-extrabold text-slate-900 mt-1">3.4/mes</p></div>
+                        <div class="bg-brand-50 p-4 rounded-xl border border-brand-100"><span class="text-[11px] text-brand-500 font-bold uppercase block">Unidades Promed. / Ticket</span><p class="text-2xl font-extrabold text-slate-900 mt-1">14.2 U</p></div>
+                        <div class="bg-brand-50 p-4 rounded-xl border border-brand-100"><span class="text-[11px] text-brand-500 font-bold uppercase block">Loyalty Club</span><p class="text-2xl font-extrabold text-slate-900 mt-1">54.2%</p></div>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-xl border border-slate-100 flex flex-col justify-between">
+                        <span class="text-sm font-bold text-slate-700 uppercase mb-4 block">Composición de Audiencia Activa</span>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
+                            <div class="h-56 flex items-center justify-center"><canvas id="audiencePieChart"></canvas></div>
+                            <div class="space-y-3 text-sm">
+                                <div class="flex justify-between items-center"><span class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-full" style="background:#0038ff"></span>Buscador de Ofertas</span><span class="font-bold text-base">40%</span></div>
+                                <div class="flex justify-between items-center"><span class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-full" style="background:#d8008a"></span>Fidelizado con la Marca</span><span class="font-bold text-base">25%</span></div>
+                                <div class="flex justify-between items-center"><span class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-full" style="background:#0f0a2e"></span>Comprador Funcional</span><span class="font-bold text-base">20%</span></div>
+                                <div class="flex justify-between items-center"><span class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-full" style="background:#cbd5e1"></span>Comprador Ocasional</span><span class="font-bold text-base">15%</span></div>
                             </div>
                         </div>
                     </div>
@@ -170,47 +170,47 @@
 
             <!-- PANTALLA 2 -->
             <section id="slide-mid" class="slide-content hidden space-y-6">
-                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
                     <div class="border-l-4 border-brand-magenta pl-3">
-                        <h2 class="text-xl font-bold text-brand-900">Mid Funnel: Rendimiento de Campaña</h2>
+                        <h2 class="text-2xl font-bold text-brand-900">Mid Funnel: Rendimiento de Campaña</h2>
                     </div>
-                    <div class="flex flex-wrap gap-2 w-full lg:w-auto">
+                    <div class="flex flex-wrap gap-2 w-full sm:w-auto">
                         <select id="mid-filter-company" onchange="applyMidFunnelFilters()" class="bg-slate-50 border border-slate-300 text-xs rounded-md px-2.5 py-2 font-medium focus:outline-none"><option value="todos">Todas Cías</option><option value="marca1">Marca 1</option><option value="marca2">Marca 2</option><option value="marca3">Marca 3</option><option value="marca4">Marca 4</option></select>
                         <select id="mid-filter-rubro" onchange="applyMidFunnelFilters()" class="bg-slate-50 border border-slate-300 text-xs rounded-md px-2.5 py-2 font-medium focus:outline-none"><option value="todos">Todos</option><option value="lacteos">Lácteos</option><option value="almacen">Almacén / Bebidas</option><option value="personal">Cuidado Personal</option></select>
                         <select id="mid-filter-campaign" onchange="applyMidFunnelFilters()" class="bg-slate-50 border border-slate-300 text-xs rounded-md px-2.5 py-2 font-medium focus:outline-none"><option value="todas">Todas Campañas</option><option value="leche">Leche</option><option value="yogur">Yogures</option><option value="queso">Queso</option><option value="promo">Promo</option><option value="cafe">Cafe</option><option value="shampoo">Shampoo</option></select>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     <div class="bg-brand-900 text-white p-4 rounded-xl shadow-sm text-center"><span class="text-xs uppercase font-medium text-brand-light">Impresiones</span><p id="kpi-impressions" class="text-3xl font-bold mt-1">0</p></div>
                     <div class="bg-brand-500 text-white p-4 rounded-xl shadow-sm text-center"><span class="text-xs uppercase font-medium">Clicks / CTR</span><p id="kpi-clicks-ctr" class="text-3xl font-bold mt-1">0</p></div>
-                    <div class="bg-brand-magenta text-white p-4 rounded-xl shadow-sm text-center"><span class="text-xs uppercase font-medium">Costo (Inv)</span><p id="kpi-cost" class="text-3xl font-bold mt-1">$0</p></div>
+                    <div class="bg-brand-magenta text-white p-4 rounded-xl shadow-sm text-center"><span class="text-xs uppercase font-medium">Costo (Inversión)</span><p id="kpi-cost" class="text-3xl font-bold mt-1">$0</p></div>
                     <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center"><span class="text-xs text-brand-900 uppercase font-bold">ROAS Promedio</span><p id="kpi-roas" class="text-3xl font-extrabold text-brand-magenta mt-1">0.0x</p></div>
                 </div>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-brand-900 mb-4">Clicks vs. Conversiones por Campaña</h3>
+                <div class="grid grid-cols-1 gap-6">
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="font-bold text-brand-900 text-lg mb-4">Clicks vs. Conversiones por Campaña</h3>
                         <div class="h-80"><canvas id="midFunnelChart"></canvas></div>
                     </div>
                     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-brand-900 mb-4">Métricas de Relevancia</h3>
+                        <h3 class="font-bold text-brand-900 text-lg mb-4">Métricas de Relevancia</h3>
                         <div class="space-y-6">
-                            <div><div class="flex justify-between text-sm mb-1 font-bold text-slate-700"><span>Sesiones Impresiones</span><span id="relevancia-sesiones-imp">0</span></div><div class="w-full bg-slate-200 rounded-full h-3"><div id="relevancia-sesiones-imp-bar" class="bg-brand-500 h-3 rounded-full" style="width: 0%"></div></div></div>
-                            <div><div class="flex justify-between text-sm mb-1 font-bold text-slate-700"><span>Sesiones Compras</span><span id="relevancia-sesiones-comp">0</span></div><div class="w-full bg-slate-200 rounded-full h-3"><div id="relevancia-sesiones-comp-bar" class="bg-brand-magenta h-3 rounded-full" style="width: 0%"></div></div></div>
+                            <div><div class="flex justify-between text-sm mb-1 font-bold text-slate-700"><span>Sesiones Impresiones</span><span id="relevancia-sesiones-imp">0</span></div><div class="w-full bg-slate-200 rounded-full h-3.5"><div id="relevancia-sesiones-imp-bar" class="bg-brand-500 h-3.5 rounded-full" style="width: 0%"></div></div></div>
+                            <div><div class="flex justify-between text-sm mb-1 font-bold text-slate-700"><span>Sesiones Compras</span><span id="relevancia-sesiones-comp">0</span></div><div class="w-full bg-slate-200 rounded-full h-3.5"><div id="relevancia-sesiones-comp-bar" class="bg-brand-magenta h-3.5 rounded-full" style="width: 0%"></div></div></div>
                         </div>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                         <h3 class="font-bold text-brand-900 mb-2">Rendimiento por Tipo de Espacio</h3>
-                        <div class="h-60 relative"><canvas id="spaceTypeChart"></canvas></div>
+                        <div class="h-64 relative"><canvas id="spaceTypeChart"></canvas></div>
                     </div>
-                    <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-brand-900 mb-2">Distribución de Inversión</h3>
-                        <div class="h-60"><canvas id="supplierSectorChart"></canvas></div>
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="font-bold text-brand-900 mb-2">Distribución de Inversión ($)</h3>
+                        <div class="h-64"><canvas id="supplierSectorChart"></canvas></div>
                     </div>
                 </div>
                 <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                    <h3 class="font-bold text-brand-900 mb-4">Análisis Eficiencia (Bubble)</h3>
+                    <h3 class="font-bold text-brand-900 text-lg mb-4">Análisis Eficiencia (Bubble)</h3>
                     <div class="h-80"><canvas id="costPerformanceChart"></canvas></div>
                 </div>
             </section>
@@ -218,48 +218,92 @@
             <!-- PANTALLA 3 -->
             <section id="slide-low" class="slide-content hidden space-y-6">
                 <div class="border-l-4 border-brand-magenta pl-3">
-                    <h2 class="text-2xl font-bold text-brand-900">Low Funnel: Atribución y Ventas</h2>
+                    <h2 class="text-2xl font-bold text-brand-900">Low Funnel: Atribución y Unidades Vendidas</h2>
                 </div>
                 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-slate-800 mb-4">Ventas Acumuladas Corporativas</h3>
-                        <div class="h-64"><canvas id="lowFunnelChart"></canvas></div>
+                <div class="grid grid-cols-1 gap-6">
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="font-bold text-slate-800 mb-4 text-lg">Unidades Acumuladas Corporativas</h3>
+                        <div class="h-72"><canvas id="lowFunnelChart"></canvas></div>
                         <div id="low-chart-total-legend" class="mt-4"></div>
                     </div>
-                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-slate-800 mb-4">Filtros de Volumen</h3>
-                        <select id="low-filter-campaign" onchange="updateLowFunnelView()" class="w-full bg-slate-50 border border-slate-300 rounded-md p-2 text-sm mb-4"><option value="todas">Todas las Campañas</option><option value="leche">Leche</option><option value="yogur">Yogures</option><option value="queso">Queso</option><option value="promo">Promo</option><option value="cafe">Cafe</option><option value="shampoo">Shampoo</option></select>
-                        <select id="low-group-by" onchange="updateLowFunnelView()" class="w-full bg-slate-50 border border-slate-300 rounded-md p-2 text-sm"><option value="ean">EAN</option><option value="categoria">Categoría</option><option value="proveedor">Proveedor</option></select>
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-center">
+                        <h3 class="font-bold text-slate-800 text-base">Filtros de Volumen:</h3>
+                        <div class="flex gap-4 w-full sm:w-auto">
+                            <select id="low-filter-campaign" onchange="updateLowFunnelView()" class="w-full sm:w-60 bg-slate-50 border border-slate-300 rounded-md p-2 text-sm"><option value="todas">Todas las Campañas</option><option value="leche">Leche</option><option value="yogur">Yogures</option><option value="queso">Queso</option><option value="promo">Promo</option><option value="cafe">Cafe</option><option value="shampoo">Shampoo</option></select>
+                            <select id="low-group-by" onchange="updateLowFunnelView()" class="w-full sm:w-48 bg-slate-50 border border-slate-300 rounded-md p-2 text-sm"><option value="ean">EAN</option><option value="categoria">Categoría</option><option value="proveedor">Proveedor</option></select>
+                        </div>
                     </div>
                 </div>
 
-                <!-- NUEVO GRÁFICO: SHARE DE CATEGORÍA (PUBLICITADOS VS NO PUBLICITADOS) -->
+                <!-- EVOLUCIÓN MARKET SHARE Y POSICIÓN RANKING (DIGITAL / E-COMMERCE) -->
+                <div class="bg-kv p-6 rounded-xl shadow-lg text-white border border-slate-800 space-y-6">
+                    <div class="flex flex-col justify-between items-start gap-4 pb-4 border-b border-slate-700">
+                        <div>
+                            <h3 class="text-2xl font-bold border-l-4 border-brand-magenta pl-3">Evolución de Market Share (%) y Posición Ranking (Digital)</h3>
+                            <p class="text-xs text-brand-light mt-1">Evolución en unidades e-commerce últimos 6 meses (Mayo - Octubre). Diferenciación de meses pautados.</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2" id="ms-category-buttons">
+                            <button onclick="switchMarketShareCategory('total')" id="btn-ms-total" class="ms-cat-btn px-4 py-1.5 rounded-full text-xs font-bold bg-brand-500 text-white shadow transition-all">Total General</button>
+                            <button onclick="switchMarketShareCategory('leches')" id="btn-ms-leches" class="ms-cat-btn px-4 py-1.5 rounded-full text-xs font-medium bg-brand-900/80 text-slate-300 border border-brand-700 hover:text-white transition-all">Leches</button>
+                            <button onclick="switchMarketShareCategory('mantecas')" id="btn-ms-mantecas" class="ms-cat-btn px-4 py-1.5 rounded-full text-xs font-medium bg-brand-900/80 text-slate-300 border border-brand-700 hover:text-white transition-all">Mantecas</button>
+                            <button onclick="switchMarketShareCategory('licores')" id="btn-ms-licores" class="ms-cat-btn px-4 py-1.5 rounded-full text-xs font-medium bg-brand-900/80 text-slate-300 border border-brand-700 hover:text-white transition-all">Licores</button>
+                            <button onclick="switchMarketShareCategory('vinos')" id="btn-ms-vinos" class="ms-cat-btn px-4 py-1.5 rounded-full text-xs font-medium bg-brand-900/80 text-slate-300 border border-brand-700 hover:text-white transition-all">Vinos</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-6 items-stretch">
+                        <div class="bg-brand-900/60 p-4 rounded-xl border border-brand-700/60 flex flex-col justify-between">
+                            <div class="flex items-center justify-between text-xs mb-3 font-semibold text-slate-300">
+                                <div class="flex items-center gap-4">
+                                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-brand-magenta inline-block"></span>Unidades Pautadas</span>
+                                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-slate-600 inline-block"></span>Unidades Orgánicas</span>
+                                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-slate-800 inline-block"></span>Competencia</span>
+                                </div>
+                                <span class="flex items-center gap-1.5 text-brand-light"><span class="w-2 h-2 rounded-full bg-brand-light inline-block"></span>Posición Ranking (#)</span>
+                            </div>
+                            <div class="h-80"><canvas id="marketShareEvolChart"></canvas></div>
+                        </div>
+
+                        <div class="bg-brand-900/80 p-6 rounded-xl border-2 border-brand-500/80 flex flex-col sm:flex-row justify-between items-center gap-6">
+                            <div>
+                                <span id="ms-kpi-peak-val" class="text-4xl font-extrabold text-white block">18,8%</span>
+                                <span id="ms-kpi-peak-lbl" class="text-xs uppercase font-bold text-brand-light tracking-wider">PICO MÁXIMO SHARE (AGOST)</span>
+                            </div>
+                            <div class="sm:border-l border-brand-700/80 sm:pl-6">
+                                <span id="ms-kpi-rank-val" class="text-4xl font-extrabold text-brand-light block">#1</span>
+                                <span class="text-xs uppercase font-bold text-slate-300 tracking-wider">MEJOR POSICIÓN RANKING</span>
+                            </div>
+                            <div class="bg-brand-700/30 p-4 rounded-lg flex-grow">
+                                <span class="text-xs font-bold text-brand-magenta block mb-1">🌐 Oportunidad Digital</span>
+                                <p id="ms-kpi-insight" class="text-xs text-slate-200 leading-relaxed">Picos manifiestos de liderazgo en los meses de pauta. Activar Retail Media consolida la posición top frente a competidores.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GRÁFICO SHARE DE CATEGORÍA (PUBLICITADOS VS RESTO DIGITAL) -->
                 <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                    <h3 class="font-bold text-brand-900 mb-2">Share de Categoría: Productos Publicitados vs Resto (Digital)</h3>
-                    <p class="text-xs text-slate-500 mb-4">Comparación del volumen de ventas de los EANs bajo campaña vs el total orgánico de su misma categoría.</p>
+                    <h3 class="font-bold text-brand-900 text-lg mb-2">Share de Categoría: Productos Publicitados vs Resto (Digital)</h3>
+                    <p class="text-xs text-slate-500 mb-4">Comparación del volumen de unidades vendidas de los EANs bajo campaña vs el total orgánico de su misma categoría.</p>
                     <div class="h-80"><canvas id="digitalCatCompChart"></canvas></div>
                 </div>
 
                 <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-100">
-                        <h3 class="font-bold text-brand-900 text-lg">Comparativa Temporal y Atribución Citrus</h3>
-                        <div class="flex bg-slate-100 p-1 rounded-lg border" id="low-funnel-metric-tabs">
-                            <button onclick="switchLowFunnelMetric('con-tasa')" id="metric-btn-con-tasa" class="px-3 py-1.5 rounded text-xs font-semibold bg-white text-slate-900 shadow-sm transition-all">Venta Con Tasa</button>
-                            <button onclick="switchLowFunnelMetric('sin-tasa')" id="metric-btn-sin-tasa" class="px-3 py-1.5 rounded text-xs font-medium text-slate-600 transition-all">Venta Sin Tasa</button>
-                            <button onclick="switchLowFunnelMetric('unidades')" id="metric-btn-unidades" class="px-3 py-1.5 rounded text-xs font-medium text-slate-600 transition-all">En Unidades</button>
-                        </div>
+                        <h3 class="font-bold text-brand-900 text-xl">Comparativa Temporal y Atribución Citrus (En Unidades)</h3>
+                        <span class="px-3 py-1 bg-brand-50 text-brand-900 text-xs font-bold rounded-md border border-brand-100">Volumen Unidades (U)</span>
                     </div>
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                        <div class="lg:col-span-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                            <span class="text-xs font-bold text-slate-700 uppercase mb-4 block">Venta DB vs. Citrus</span>
+                    <div class="grid grid-cols-1 gap-6">
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <span class="text-xs font-bold text-slate-700 uppercase mb-4 block">Unidades DB vs. Citrus</span>
                             <div class="h-64"><canvas id="citrusVsTotalChart"></canvas></div>
                         </div>
-                        <div class="lg:col-span-8 overflow-x-auto">
+                        <div class="overflow-x-auto">
                             <table class="w-full text-left text-sm" id="temporal-sales-table">
                                 <thead>
                                     <tr class="text-brand-900 text-xs uppercase border-b-2 border-brand-100">
-                                        <th class="pb-3 font-bold">Producto / EAN</th><th class="pb-3 font-bold text-right" id="th-current-val">Venta Actual</th><th class="pb-3 font-bold text-right">MoM</th><th class="pb-3 font-bold text-right">YoY</th><th class="pb-3 font-bold text-right">Citrus</th><th class="pb-3 font-bold text-right">Share</th>
+                                        <th class="pb-3 font-bold">Producto / EAN</th><th class="pb-3 font-bold text-right">Volumen Actual</th><th class="pb-3 font-bold text-right">MoM</th><th class="pb-3 font-bold text-right">YoY</th><th class="pb-3 font-bold text-right">Citrus</th><th class="pb-3 font-bold text-right">Share</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100 text-slate-700" id="temporal-sales-tbody"></tbody>
@@ -272,28 +316,28 @@
             <!-- PANTALLA 4 -->
             <section id="slide-funnel-campaign" class="slide-content hidden space-y-6">
                 <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                    <div class="flex flex-col md:flex-row justify-between items-center gap-4 pb-6 border-b border-slate-200">
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pb-6 border-b border-slate-200">
                         <h2 class="text-2xl font-bold text-brand-900 border-l-4 border-brand-magenta pl-3">Funnel Unificado End-to-End</h2>
-                        <select id="campaign-selector" onchange="updateCampaignFunnel(this.value)" class="w-full md:w-80 bg-brand-50 border-2 border-brand-200 text-brand-900 font-bold rounded-md px-4 py-2"><option value="leche">Camp. Leche Entera</option><option value="yogur">Camp. Yogures</option><option value="queso">Camp. Queso</option></select>
+                        <select id="campaign-selector" onchange="updateCampaignFunnel(this.value)" class="w-full sm:w-80 bg-brand-50 border-2 border-brand-200 text-brand-900 font-bold rounded-md px-4 py-2"><option value="leche">Camp. Leche Entera</option><option value="yogur">Camp. Yogures</option><option value="queso">Camp. Queso</option></select>
                     </div>
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-6">
+                    <div class="grid grid-cols-1 gap-8 pt-6">
                         <div class="space-y-4">
-                            <h3 class="font-bold text-slate-800 mb-4">Flujo de Conversión</h3>
-                            <div class="bg-brand-900 text-white rounded-lg p-4 flex justify-between items-center"><span class="font-bold">1. Impresiones</span><span id="funnel-impressions" class="text-xl font-bold">0</span></div>
+                            <h3 class="font-bold text-slate-800 text-lg mb-4">Flujo de Conversión</h3>
+                            <div class="bg-brand-900 text-white rounded-lg p-4 flex justify-between items-center"><span class="font-bold">1. Impresiones</span><span id="funnel-impressions" class="text-2xl font-bold">0</span></div>
                             <div class="text-center text-sm font-bold text-brand-500 py-1">CTR: <span id="funnel-ctr">0%</span></div>
-                            <div class="bg-brand-500 text-white rounded-lg p-4 flex justify-between items-center"><span class="font-bold">2. Clicks</span><span id="funnel-clicks" class="text-xl font-bold">0</span></div>
+                            <div class="bg-brand-500 text-white rounded-lg p-4 flex justify-between items-center"><span class="font-bold">2. Clicks</span><span id="funnel-clicks" class="text-2xl font-bold">0</span></div>
                             <div class="text-center text-sm font-bold text-brand-magenta py-1">CR: <span id="funnel-cr">0%</span></div>
-                            <div class="bg-brand-magenta text-white rounded-lg p-4 flex justify-between items-center"><span class="font-bold">3. Conversiones</span><span id="funnel-conversions" class="text-xl font-bold">0</span></div>
+                            <div class="bg-brand-magenta text-white rounded-lg p-4 flex justify-between items-center"><span class="font-bold">3. Conversiones</span><span id="funnel-conversions" class="text-2xl font-bold">0</span></div>
                         </div>
                         <div class="bg-kv p-6 rounded-xl border border-slate-800 text-white">
                             <h3 class="font-bold mb-6 uppercase tracking-wider text-sm text-brand-light">Rendimiento Financiero</h3>
                             <div class="space-y-4">
-                                <div class="flex justify-between border-b border-slate-600 pb-2"><span class="font-bold">Inversión (Costo)</span><span id="funnel-cost" class="font-bold">$0</span></div>
-                                <div class="flex justify-between border-b border-slate-600 pb-2"><span class="font-bold">Venta Total DB</span><span id="funnel-total-sales-db" class="font-bold">$0</span></div>
-                                <div class="flex justify-between border-b border-slate-600 pb-2"><span class="font-bold">Venta Atribuida</span><span id="funnel-sales-val" class="font-bold text-brand-light">$0</span></div>
+                                <div class="flex justify-between border-b border-slate-600 pb-2"><span class="font-bold">Inversión (Costo)</span><span id="funnel-cost" class="font-bold text-lg">$0</span></div>
+                                <div class="flex justify-between border-b border-slate-600 pb-2"><span class="font-bold">Unidades Totales DB</span><span id="funnel-total-sales-db" class="font-bold text-lg">0 U</span></div>
+                                <div class="flex justify-between border-b border-slate-600 pb-2"><span class="font-bold">Unidades Atribuidas</span><span id="funnel-sales-val" class="font-bold text-lg text-brand-light">0 U</span></div>
                                 <div class="pt-4 text-center">
                                     <span class="block text-xs uppercase font-bold text-slate-300 mb-1">ROAS</span>
-                                    <span id="funnel-roas" class="text-5xl font-extrabold text-white drop-shadow-md">0.0x</span>
+                                    <span id="funnel-roas" class="text-6xl font-extrabold text-white drop-shadow-md">0.0x</span>
                                 </div>
                             </div>
                         </div>
@@ -303,8 +347,8 @@
 
             <!-- PANTALLA 5 -->
             <section id="slide-timeseries" class="slide-content hidden space-y-6">
-                <div class="flex flex-col lg:flex-row justify-between items-center gap-4">
-                    <div class="border-l-4 border-brand-magenta pl-3"><h2 class="text-2xl font-bold text-brand-900">Series Temporales: Tráfico y Ventas</h2></div>
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div class="border-l-4 border-brand-magenta pl-3"><h2 class="text-2xl font-bold text-brand-900">Series Temporales: Tráfico y Unidades</h2></div>
                     <div class="flex gap-2">
                         <select id="ts-filter-date" onchange="updateTimeSeriesCharts()" class="bg-slate-50 border rounded-md px-2 py-1 text-xs"><option value="4weeks">Últimas 4 Semanas</option><option value="3months">Último Trimestre</option></select>
                         <select id="ts-filter-category" onchange="updateTimeSeriesCharts()" class="bg-slate-50 border rounded-md px-2 py-1 text-xs"><option value="todas">Todas</option><option value="lacteos">Lácteos</option><option value="almacen">Almacén</option></select>
@@ -313,12 +357,12 @@
                 </div>
                 <div class="grid grid-cols-1 gap-6">
                     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-slate-800 mb-4">Evolución de Tráfico (Top Funnel)</h3>
-                        <div class="h-64"><canvas id="tsTrafficChart"></canvas></div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-4">Evolución de Tráfico (Top Funnel)</h3>
+                        <div class="h-72"><canvas id="tsTrafficChart"></canvas></div>
                     </div>
                     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-slate-800 mb-4">Evolución de Ventas DB (Low Funnel)</h3>
-                        <div class="h-64"><canvas id="tsSalesChart"></canvas></div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-4">Evolución de Unidades Vendidas DB (Low Funnel)</h3>
+                        <div class="h-72"><canvas id="tsSalesChart"></canvas></div>
                     </div>
                 </div>
             </section>
@@ -332,27 +376,18 @@
             <!-- PESTAÑA 1 INSTORE -->
             <section id="slide-instore-perf" class="slide-content-ins space-y-6">
                 
-                <div class="bg-kv p-6 rounded-xl shadow-md text-white flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                <div class="bg-kv p-6 rounded-xl shadow-md text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div class="border-l-4 border-brand-magenta pl-3">
                         <h2 class="text-2xl font-bold">Análisis de Campañas Físicas (InStore)</h2>
                     </div>
-                    <div class="flex gap-2 w-full lg:w-auto">
+                    <div class="flex gap-2 w-full sm:w-auto">
                         <select id="instore-filter-campaign" onchange="applyInstoreFilters()" class="bg-brand-900 border border-brand-600 text-white text-xs rounded-md px-3 py-2 font-bold focus:outline-none"><option value="marca5">Cabecera Marca 5</option><option value="marca6">Isla Marca 6</option></select>
                         <select id="instore-filter-format" onchange="applyInstoreFilters()" class="bg-brand-900 border border-brand-600 text-white text-xs rounded-md px-3 py-2 font-bold focus:outline-none"><option value="todos">Todos los Formatos</option><option value="hiper">Hipermercados</option><option value="market">Market</option><option value="express">Express</option><option value="maxi">Maxi</option></select>
                         <select id="instore-filter-region" onchange="applyInstoreFilters()" class="bg-brand-900 border border-brand-600 text-white text-xs rounded-md px-3 py-2 font-bold focus:outline-none"><option value="nacional">Nacional</option><option value="amba">AMBA</option><option value="centro">Centro</option></select>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-white p-5 rounded-xl border-l-4 border-brand-500 shadow-sm flex items-center justify-between">
-                        <div>
-                            <span class="text-xs text-slate-500 uppercase font-bold">Compliance PDV</span>
-                            <div class="flex items-end gap-2 mt-1">
-                                <p id="instore-compliance-pct" class="text-4xl font-bold text-brand-900">88.5%</p>
-                            </div>
-                            <span id="instore-compliance-text" class="text-xs text-brand-500 font-bold">425 / 480 Tiendas</span>
-                        </div>
-                    </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div class="bg-kv p-5 rounded-xl shadow-md flex items-center justify-between text-white border border-slate-700">
                         <div>
                             <span class="text-xs uppercase font-bold text-brand-light">Uplift Test vs Control</span>
@@ -363,46 +398,85 @@
                     </div>
                     <div class="bg-white p-5 rounded-xl border-l-4 border-brand-900 shadow-sm flex items-center justify-between">
                         <div>
-                            <span class="text-xs text-slate-500 uppercase font-bold">Ventas Tiendas TEST</span>
+                            <span class="text-xs text-slate-500 uppercase font-bold">Unidades Tiendas TEST</span>
                             <div class="flex items-end gap-2 mt-1">
-                                <p id="instore-sales-test" class="text-3xl font-bold text-slate-900">$45.2M</p>
+                                <p id="instore-sales-test" class="text-3xl font-bold text-slate-900">45.2K U</p>
                             </div>
-                            <span id="instore-sales-control" class="text-xs text-brand-magenta font-bold">vs $39.5M Control</span>
+                            <span id="instore-sales-control" class="text-xs text-brand-magenta font-bold">vs 39.5K U Control</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    <div class="lg:col-span-8 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-brand-900 mb-4">Ventas: Actual vs Periodo Anterior vs Año Pasado</h3>
-                        <div class="h-64"><canvas id="instoreTemporalChart"></canvas></div>
+                <div class="grid grid-cols-1 gap-6">
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="font-bold text-brand-900 text-lg mb-4">Unidades: Actual vs Periodo Anterior vs Año Pasado</h3>
+                        <div class="h-72"><canvas id="instoreTemporalChart"></canvas></div>
                     </div>
 
-                    <div class="lg:col-span-4 bg-kv p-6 rounded-xl shadow-md text-white flex flex-col justify-center border border-slate-700">
-                        <h3 class="font-bold text-white mb-6 border-b border-brand-500/50 pb-2">Distribución Geográfica (Compliance)</h3>
+                    <div class="bg-kv p-6 rounded-xl shadow-md text-white flex flex-col justify-center border border-slate-700">
+                        <h3 class="font-bold text-white mb-6 border-b border-brand-500/50 pb-2 text-lg">Distribución Geográfica (Uplift %)</h3>
                         <div class="space-y-6">
-                            <div><div class="flex justify-between text-sm font-bold mb-1"><span>AMBA</span><span id="map-amba-val" class="text-brand-magenta">85%</span></div><div class="w-full bg-brand-900 rounded-full h-2"><div id="map-amba-bar" class="bg-brand-magenta h-2 rounded-full" style="width: 85%"></div></div></div>
-                            <div><div class="flex justify-between text-sm font-bold mb-1"><span>Centro</span><span id="map-centro-val" class="text-brand-500">65%</span></div><div class="w-full bg-brand-900 rounded-full h-2"><div id="map-centro-bar" class="bg-brand-500 h-2 rounded-full" style="width: 65%"></div></div></div>
-                            <div><div class="flex justify-between text-sm font-bold mb-1"><span>Cuyo</span><span id="map-cuyo-val" class="text-brand-light">40%</span></div><div class="w-full bg-brand-900 rounded-full h-2"><div id="map-cuyo-bar" class="bg-brand-light h-2 rounded-full" style="width: 40%"></div></div></div>
-                            <div><div class="flex justify-between text-sm font-bold mb-1"><span>NOA/NEA</span><span id="map-noa-val" class="text-slate-400">25%</span></div><div class="w-full bg-brand-900 rounded-full h-2"><div id="map-noa-bar" class="bg-slate-400 h-2 rounded-full" style="width: 25%"></div></div></div>
+                            <div><div class="flex justify-between text-sm font-bold mb-1"><span>NOA/NEA</span><span id="map-noa-val" class="text-brand-magenta">+28.5%</span></div><div class="w-full bg-brand-900 rounded-full h-2.5"><div id="map-noa-bar" class="bg-brand-magenta h-2.5 rounded-full" style="width: 85%"></div></div></div>
+                            <div><div class="flex justify-between text-sm font-bold mb-1"><span>Cuyo</span><span id="map-cuyo-val" class="text-brand-500">+22.1%</span></div><div class="w-full bg-brand-900 rounded-full h-2.5"><div id="map-cuyo-bar" class="bg-brand-500 h-2.5 rounded-full" style="width: 65%"></div></div></div>
+                            <div><div class="flex justify-between text-sm font-bold mb-1"><span>Centro</span><span id="map-centro-val" class="text-brand-light">+14.3%</span></div><div class="w-full bg-brand-900 rounded-full h-2.5"><div id="map-centro-bar" class="bg-brand-light h-2.5 rounded-full" style="width: 42%"></div></div></div>
+                            <div><div class="flex justify-between text-sm font-bold mb-1"><span>AMBA</span><span id="map-amba-val" class="text-slate-400">+8.2%</span></div><div class="w-full bg-brand-900 rounded-full h-2.5"><div id="map-amba-bar" class="bg-slate-400 h-2.5 rounded-full" style="width: 25%"></div></div></div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- NUEVO GRÁFICO: SHARE DE CATEGORÍA (PUBLICITADOS VS NO PUBLICITADOS) INSTORE -->
-                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                    <h3 class="font-bold text-brand-900 mb-2">Comportamiento en la Categoría: Publicitados vs Resto (InStore)</h3>
-                    <p class="text-xs text-slate-500 mb-4">Volumen de ventas dentro de las tiendas Test, separando los EANs bajo campaña de los EANs orgánicos de la misma categoría.</p>
-                    <div class="h-80"><canvas id="instoreCatCompChart"></canvas></div>
+                <!-- EVOLUCIÓN MARKET SHARE Y POSICIÓN RANKING (INSTORE - KV DESIGN) -->
+                <div class="bg-kv p-6 rounded-xl shadow-lg text-white border border-slate-800 space-y-6">
+                    <div class="flex flex-col justify-between items-start gap-4 pb-4 border-b border-slate-700">
+                        <div>
+                            <h3 class="text-2xl font-bold border-l-4 border-brand-magenta pl-3">Evolución de Market Share (%) y Posición Ranking (InStore)</h3>
+                            <p class="text-xs text-brand-light mt-1">Evolución de ventas en tiendas físicas (Mayo - Octubre). Diferenciación de meses pautados.</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2" id="ins-ms-category-buttons">
+                            <button onclick="switchInstoreMarketShareCategory('total')" id="btn-ins-ms-total" class="ins-ms-cat-btn px-4 py-1.5 rounded-full text-xs font-bold bg-brand-500 text-white shadow transition-all">Total General</button>
+                            <button onclick="switchInstoreMarketShareCategory('leches')" id="btn-ins-ms-leches" class="ins-ms-cat-btn px-4 py-1.5 rounded-full text-xs font-medium bg-brand-900/80 text-slate-300 border border-brand-700 hover:text-white transition-all">Leches</button>
+                            <button onclick="switchInstoreMarketShareCategory('mantecas')" id="btn-ins-ms-mantecas" class="ins-ms-cat-btn px-4 py-1.5 rounded-full text-xs font-medium bg-brand-900/80 text-slate-300 border border-brand-700 hover:text-white transition-all">Mantecas</button>
+                            <button onclick="switchInstoreMarketShareCategory('licores')" id="btn-ins-ms-licores" class="ins-ms-cat-btn px-4 py-1.5 rounded-full text-xs font-medium bg-brand-900/80 text-slate-300 border border-brand-700 hover:text-white transition-all">Licores</button>
+                            <button onclick="switchInstoreMarketShareCategory('vinos')" id="btn-ins-ms-vinos" class="ins-ms-cat-btn px-4 py-1.5 rounded-full text-xs font-medium bg-brand-900/80 text-slate-300 border border-brand-700 hover:text-white transition-all">Vinos</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-6 items-stretch">
+                        <div class="bg-brand-900/60 p-4 rounded-xl border border-brand-700/60 flex flex-col justify-between">
+                            <div class="flex items-center justify-between text-xs mb-3 font-semibold text-slate-300">
+                                <div class="flex items-center gap-4">
+                                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-brand-magenta inline-block"></span>Unidades Pautadas</span>
+                                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-slate-600 inline-block"></span>Unidades Orgánicas</span>
+                                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-slate-800 inline-block"></span>Competencia</span>
+                                </div>
+                                <span class="flex items-center gap-1.5 text-brand-light"><span class="w-2 h-2 rounded-full bg-brand-light inline-block"></span>Posición Ranking (#)</span>
+                            </div>
+                            <div class="h-80"><canvas id="instoreCatCompChart"></canvas></div>
+                        </div>
+
+                        <div class="bg-brand-900/80 p-6 rounded-xl border-2 border-brand-500/80 flex flex-col sm:flex-row justify-between items-center gap-6">
+                            <div>
+                                <span id="ins-ms-kpi-peak-val" class="text-4xl font-extrabold text-white block">21,4%</span>
+                                <span id="ins-ms-kpi-peak-lbl" class="text-xs uppercase font-bold text-brand-light tracking-wider">PICO MÁXIMO SHARE (AGOST)</span>
+                            </div>
+                            <div class="sm:border-l border-brand-700/80 sm:pl-6">
+                                <span id="ins-ms-kpi-rank-val" class="text-4xl font-extrabold text-brand-light block">#1</span>
+                                <span class="text-xs uppercase font-bold text-slate-300 tracking-wider">MEJOR POSICIÓN RANKING</span>
+                            </div>
+                            <div class="bg-brand-700/30 p-4 rounded-lg flex-grow">
+                                <span class="text-xs font-bold text-brand-magenta block mb-1">🏪 Oportunidad InStore</span>
+                                <p id="ins-ms-kpi-insight" class="text-xs text-slate-200 leading-relaxed">Sostenida aceleración en cabecera de góndola durante los meses con activación física en PDV.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                    <h3 class="font-bold text-brand-900 mb-4">Detalle de Comparativa por Formato</h3>
+                    <h3 class="font-bold text-brand-900 text-lg mb-4">Detalle de Comparativa por Formato</h3>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm">
                             <thead>
                                 <tr class="text-brand-900 text-xs uppercase border-b-2 border-brand-100">
-                                    <th class="pb-3 font-bold">Formato</th><th class="pb-3 font-bold text-right">Venta TEST</th><th class="pb-3 font-bold text-right">Venta CONTROL</th><th class="pb-3 font-bold text-right">UPLIFT (%)</th><th class="pb-3 font-bold text-right">PoP</th><th class="pb-3 font-bold text-right">YoY</th>
+                                    <th class="pb-3 font-bold">Formato</th><th class="pb-3 font-bold text-right">Unidades TEST</th><th class="pb-3 font-bold text-right">Unidades CONTROL</th><th class="pb-3 font-bold text-right">UPLIFT (%)</th><th class="pb-3 font-bold text-right">PoP</th><th class="pb-3 font-bold text-right">YoY</th>
                                 </tr>
                             </thead>
                             <tbody id="instore-table-body" class="divide-y divide-slate-100 text-slate-700"></tbody>
@@ -413,7 +487,7 @@
 
             <!-- PESTAÑA 2 INSTORE -->
             <section id="slide-instore-shopper" class="slide-content-ins hidden space-y-6">
-                <div class="bg-kv p-6 rounded-xl shadow-md text-white flex flex-col md:flex-row justify-between items-center gap-4 border border-slate-700">
+                <div class="bg-kv p-6 rounded-xl shadow-md text-white flex flex-col sm:flex-row justify-between items-center gap-4 border border-slate-700">
                     <h2 class="text-2xl font-bold border-l-4 border-brand-magenta pl-3">Perfil del Shopper InStore</h2>
                     <div class="flex gap-2">
                         <select id="instore-shopper-filter-date" onchange="applyInstoreShopperFilters()" class="bg-brand-900 border border-brand-600 text-white text-xs rounded-md px-3 py-2 font-bold focus:outline-none"><option value="30d">Últimos 30 Días</option><option value="last_month">Mes Anterior</option></select>
@@ -421,19 +495,36 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div class="bg-white p-6 rounded-xl border-t-4 border-brand-magenta text-center shadow-sm flex flex-col justify-center">
-                        <span class="text-xs text-slate-500 font-bold uppercase">Ticket Promedio</span>
-                        <h3 id="instore-ticket-avg" class="text-5xl font-extrabold text-brand-600 mt-2">$24,350</h3>
+                        <span class="text-xs text-slate-500 font-bold uppercase">Unidades Promedio / Ticket</span>
+                        <h3 id="instore-ticket-avg" class="text-5xl font-extrabold text-brand-600 mt-2">18.5 U</h3>
                     </div>
                     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm text-center">
-                        <h3 class="text-sm font-bold text-slate-800 mb-4">Género</h3>
-                        <div class="h-40 relative"><canvas id="instoreGenderChart"></canvas></div>
-                        <div class="flex justify-center gap-4 mt-4 text-xs font-bold"><span id="instore-gender-f" class="text-brand-magenta">F: 65%</span><span id="instore-gender-m" class="text-brand-900">M: 35%</span></div>
+                        <h3 class="text-sm font-bold text-slate-800 mb-2">Género</h3>
+                        <div class="h-36 relative"><canvas id="instoreGenderChart"></canvas></div>
+                        <div class="flex justify-center gap-4 mt-2 text-xs font-bold"><span id="instore-gender-f" class="text-brand-magenta">F: 65%</span><span id="instore-gender-m" class="text-brand-900">M: 35%</span></div>
                     </div>
                     <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm text-center">
-                        <h3 class="text-sm font-bold text-slate-800 mb-4">Rango Etario</h3>
+                        <h3 class="text-sm font-bold text-slate-800 mb-2">Rango Etario</h3>
                         <div class="h-40"><canvas id="instoreAgeChart"></canvas></div>
+                    </div>
+                    <!-- TARJETA: DISTRIBUCIÓN POR PROVINCIA -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <h3 class="text-sm font-bold text-slate-800 mb-2 text-center">Distribución Clientes por Provincia</h3>
+                        <div class="space-y-2.5 text-xs" id="instore-provincia-list">
+                            <div class="flex justify-between items-center"><span class="font-medium text-slate-700">Bs. As. / CABA</span><span id="prov-bsas" class="font-bold text-brand-900 text-sm">52.0%</span></div>
+                            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden"><div id="prov-bsas-bar" class="bg-brand-500 h-full rounded-full" style="width: 52%"></div></div>
+                            
+                            <div class="flex justify-between items-center"><span class="font-medium text-slate-700">Córdoba</span><span id="prov-cba" class="font-bold text-brand-900 text-sm">18.5%</span></div>
+                            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden"><div id="prov-cba-bar" class="bg-brand-magenta h-full rounded-full" style="width: 18.5%"></div></div>
+                            
+                            <div class="flex justify-between items-center"><span class="font-medium text-slate-700">Santa Fe</span><span id="prov-sfe" class="font-bold text-brand-900 text-sm">14.2%</span></div>
+                            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden"><div id="prov-sfe-bar" class="bg-brand-light h-full rounded-full" style="width: 14.2%"></div></div>
+                            
+                            <div class="flex justify-between items-center"><span class="font-medium text-slate-700">Mendoza</span><span id="prov-mdz" class="font-bold text-brand-900 text-sm">8.3%</span></div>
+                            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden"><div id="prov-mdz-bar" class="bg-slate-600 h-full rounded-full" style="width: 8.3%"></div></div>
+                        </div>
                     </div>
                 </div>
 
@@ -451,19 +542,37 @@
 
     <!-- FOOTER -->
     <footer class="bg-brand-900 text-white py-4 mt-12 border-t border-brand-magenta">
-        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+        <div class="max-w-4xl mx-auto px-6 flex justify-between items-center">
             <span class="text-xs text-brand-light font-bold">Mockup Interactivo End-to-End (KV Integrado y Totalmente Funcional)</span>
         </div>
     </footer>
 
     <!-- LOGICA JAVASCRIPT -->
     <script>
+        // Registrar Plugin de Etiquetas Globalmente
+        Chart.register(ChartDataLabels);
+
         // Paleta Corporativa KV
         const cDark = '#0f0a2e'; const cBlue = '#0038ff'; const cLight = '#4b98e5'; const cMag = '#d8008a';
 
-        // ==========================================
+        // Opciones por defecto para etiquetas de datos
+        const defaultLightLabels = {
+            datalabels: {
+                anchor: (context) => context.dataset.type === 'line' ? 'end' : 'end',
+                align: (context) => context.dataset.type === 'line' ? 'top' : 'start',
+                offset: (context) => context.dataset.type === 'line' ? 4 : 2,
+                color: (context) => context.dataset.type === 'line' ? cMag : '#ffffff',
+                font: { size: 10, weight: 'bold' },
+                formatter: function(val) {
+                    if (typeof val === 'number') {
+                        return val >= 1000 ? (val/1000).toFixed(1) + 'K' : val;
+                    }
+                    return val;
+                }
+            }
+        };
+
         // BASES DE DATOS MOCKUP
-        // ==========================================
         const midFunnelCampaigns = [
             { id: 'leche', compañia: 'marca3', rubro: 'lacteos', nombre: 'Camp. Leche', impresiones: 300000, clicks: 11000, conversiones: 770, costo: 3200, ventas: 13440, sesiones_imp: 35000, sesiones_comp: 2100, clicks_espacios: [6000, 2700, 2300], bubble_data: { search: { x: 400, y: 4.8, r: 8 }, home: { x: 1500, y: 1.5, r: 15 }, category: { x: 800, y: 3.2, r: 10 }, checkout: { x: 500, y: 2.1, r: 6 } } },
             { id: 'yogur', compañia: 'marca3', rubro: 'lacteos', nombre: 'Camp. Yogures', impresiones: 200000, clicks: 7500, conversiones: 600, costo: 2200, ventas: 9240, sesiones_imp: 23000, sesiones_comp: 1380, clicks_espacios: [4000, 1900, 1600], bubble_data: { search: { x: 300, y: 4.5, r: 6 }, home: { x: 1200, y: 1.3, r: 12 }, category: { x: 500, y: 3.0, r: 8 }, checkout: { x: 200, y: 1.9, r: 4 } } },
@@ -473,15 +582,17 @@
             { id: 'shampoo', compañia: 'marca4', rubro: 'personal', nombre: 'Camp. Shampoo', impresiones: 80000, clicks: 3300, conversiones: 250, costo: 1400, ventas: 5880, sesiones_imp: 10000, sesiones_comp: 600, clicks_espacios: [1800, 1000, 500], bubble_data: { search: { x: 300, y: 4.3, r: 4 }, home: { x: 700, y: 1.2, r: 6 }, category: { x: 200, y: 2.9, r: 4 }, checkout: { x: 200, y: 1.8, r: 3 } } }
         ];
         const initialSupplierData = { lacteos: [2000, 0, 15000, 0], almacen: [5000, 18000, 3000, 2000], personal: [22000, 0, 0, 14000] };
-        const temporalSalesData = {
-            'con-tasa': [ { name: 'Leche Entera', actual: '$65,000', mom: '+8.5%', momUp: true, yoy: '+24.1%', yoyUp: true, citrus: '$16,200', share: '24.9%' }, { name: 'Yogur Frutilla', actual: '$48,000', mom: '-2.1%', momUp: false, yoy: '+12.3%', yoyUp: true, citrus: '$11,200', share: '23.3%' }, { name: 'Queso Crema', actual: '$21,000', mom: '+14.2%', momUp: true, yoy: '-5.8%', yoyUp: false, citrus: '$8,100', share: '38.6%' } ],
-            'sin-tasa': [ { name: 'Leche Entera', actual: '$53,719', mom: '+8.5%', momUp: true, yoy: '+24.1%', yoyUp: true, citrus: '$13,397', share: '24.9%' }, { name: 'Yogur Frutilla', actual: '$39,696', mom: '-2.1%', momUp: false, yoy: '+12.3%', yoyUp: true, citrus: '$9,262', share: '23.3%' }, { name: 'Queso Cream.', actual: '$17,367', mom: '+14.2%', momUp: true, yoy: '-5.8%', yoyUp: false, citrus: '$6,703', share: '38.6%' } ],
-            'unidades': [ { name: 'Leche Entera', actual: '43,300 U', mom: '+6.0%', momUp: true, yoy: '+18.0%', yoyUp: true, citrus: '10,800 U', share: '24.9%' }, { name: 'Yogur Frutilla', actual: '24,000 U', mom: '-4.0%', momUp: false, yoy: '+8.0%', yoyUp: true, citrus: '5,600 U', share: '23.3%' }, { name: 'Queso Cream.', actual: '7,000 U', mom: '+11.0%', momUp: true, yoy: '-9.0%', yoyUp: false, citrus: '2,700 U', share: '38.6%' } ]
-        };
+        
+        const temporalSalesData = [ 
+            { name: 'Leche Entera', actual: '43,300 U', mom: '+6.0%', momUp: true, yoy: '+18.0%', yoyUp: true, citrus: '10,800 U', share: '24.9%' }, 
+            { name: 'Yogur Frutilla', actual: '24,000 U', mom: '-4.0%', momUp: false, yoy: '+8.0%', yoyUp: true, citrus: '5,600 U', share: '23.3%' }, 
+            { name: 'Queso Crema', actual: '7,000 U', mom: '+11.0%', momUp: true, yoy: '-9.0%', yoyUp: false, citrus: '2,700 U', share: '38.6%' } 
+        ];
+
         const campaignData = {
-            leche: { impressions: "450,000", ctr: "3.0%", clicks: "13,500", clicksToSessions: "85.0%", sessions: "11,475", cr: "6.0%", conversions: "810", cost: "$2,700", totalSalesDB: "$65,000", salesVal: "$16,200", roas: "6.0x" },
-            yogur: { impressions: "320,000", ctr: "3.5%", clicks: "11,200", clicksToSessions: "80.0%", sessions: "8,960", cr: "5.0%", conversions: "448", cost: "$2,240", totalSalesDB: "$48,000", salesVal: "$11,200", roas: "5.0x" },
-            queso: { impressions: "180,000", ctr: "3.0%", clicks: "5,400", clicksToSessions: "90.0%", sessions: "4,860", cr: "6.0%", conversions: "291", cost: "$1,350", totalSalesDB: "$21,000", salesVal: "$8,100", roas: "6.0x" }
+            leche: { impressions: "450,000", ctr: "3.0%", clicks: "13,500", clicksToSessions: "85.0%", sessions: "11,475", cr: "6.0%", conversions: "810", cost: "$2,700", totalSalesDB: "43,300 U", salesVal: "10,800 U", roas: "6.0x" },
+            yogur: { impressions: "320,000", ctr: "3.5%", clicks: "11,200", clicksToSessions: "80.0%", sessions: "8,960", cr: "5.0%", conversions: "448", cost: "$2,240", totalSalesDB: "24,000 U", salesVal: "5,600 U", roas: "5.0x" },
+            queso: { impressions: "180,000", ctr: "3.0%", clicks: "5,400", clicksToSessions: "90.0%", sessions: "4,860", cr: "6.0%", conversions: "291", cost: "$1,350", totalSalesDB: "7,000 U", salesVal: "2,700 U", roas: "6.0x" }
         };
         const instoreFormatsData = [
             { id: 'hiper', name: 'Hipermercados', baseT: 18.5, baseC: 15.8, up: 17.1, pop: 5.2, yoy: 12.4 },
@@ -490,16 +601,132 @@
             { id: 'maxi', name: 'Formato Maxi', baseT: 5.6, baseC: 5.0, up: 12.0, pop: 1.1, yoy: 5.5 }
         ];
 
+        // DATOS MOCKUP MARKET SHARE EVOLUCIÓN DIGITAL (6 MESES)
+        const marketShareCategoryData = {
+            total: {
+                months: ['Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre'],
+                ownUnitsPromoted: [0, 14200, 0, 18800, 0, 16500],
+                ownUnitsOrganic:  [8500, 3200, 9100, 2400, 8800, 2100],
+                competitorUnits:  [62000, 58000, 61000, 54000, 59000, 53000],
+                ranking: [4, 2, 4, 1, 3, 2],
+                peakShare: '18,8%',
+                peakMonth: 'AGOSTO',
+                bestRank: '#1',
+                insight: 'Picos de liderazgo (#1 en Agosto) directamente correlacionados con meses pautados en Retail Media Digital.'
+            },
+            leches: {
+                months: ['Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre'],
+                ownUnitsPromoted: [0, 16500, 0, 21000, 0, 19200],
+                ownUnitsOrganic:  [9200, 2800, 9800, 2100, 9400, 1800],
+                competitorUnits:  [55000, 48000, 53000, 42000, 51000, 44000],
+                ranking: [3, 1, 3, 1, 2, 1],
+                peakShare: '22,4%',
+                peakMonth: 'AGOSTO',
+                bestRank: '#1',
+                insight: 'Liderazgo absoluto (#1) en Leches durante los meses pautados (Junio, Agosto y Octubre).'
+            },
+            mantecas: {
+                months: ['Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre'],
+                ownUnitsPromoted: [0, 0, 11200, 0, 13500, 0],
+                ownUnitsOrganic:  [4200, 4500, 1200, 4800, 1100, 5000],
+                competitorUnits:  [38000, 37000, 31000, 36000, 29000, 35000],
+                ranking: [5, 4, 2, 4, 1, 4],
+                peakShare: '15,6%',
+                peakMonth: 'SEPTIEMBRE',
+                bestRank: '#1',
+                insight: 'La pauta digital en Julio y Septiembre permitió escalar de posición #5 a #1 en Mantecas.'
+            },
+            licores: {
+                months: ['Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre'],
+                ownUnitsPromoted: [12800, 0, 14500, 0, 0, 17200],
+                ownUnitsOrganic:  [1500, 5100, 1800, 5400, 5200, 1200],
+                competitorUnits:  [41000, 44000, 39000, 43000, 45000, 37000],
+                ranking: [2, 4, 2, 4, 5, 1],
+                peakShare: '19,5%',
+                peakMonth: 'OCTUBRE',
+                bestRank: '#1',
+                insight: 'Pauta estratégica en Licores alcanza #1 en Octubre con un incremento del +38% frente a competidores.'
+            },
+            vinos: {
+                months: ['Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre'],
+                ownUnitsPromoted: [0, 15400, 16800, 0, 18200, 0],
+                ownUnitsOrganic:  [6100, 2100, 2400, 6500, 2200, 6800],
+                competitorUnits:  [68000, 59000, 56000, 67000, 52000, 65000],
+                ranking: [4, 2, 2, 4, 1, 4],
+                peakShare: '17,2%',
+                peakMonth: 'SEPTIEMBRE',
+                bestRank: '#1',
+                insight: 'Sostenimiento de pauta en Vinos (Jun-Jul) aceleró el pico máximo de preferencia en Septiembre.'
+            }
+        };
+
+        // DATOS MOCKUP MARKET SHARE EVOLUCIÓN INSTORE (6 MESES)
+        const instoreMarketShareCategoryData = {
+            total: {
+                months: ['Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre'],
+                ownUnitsPromoted: [0, 22000, 0, 28500, 0, 24100],
+                ownUnitsOrganic:  [11500, 4100, 12200, 3200, 11800, 3900],
+                competitorUnits:  [78000, 69000, 75000, 61000, 72000, 64000],
+                ranking: [3, 1, 3, 1, 2, 1],
+                peakShare: '21,4%',
+                peakMonth: 'AGOSTO',
+                bestRank: '#1',
+                insight: 'Sostenida aceleración en cabecera de góndola durante los meses con activación física en PDV.'
+            },
+            leches: {
+                months: ['Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre'],
+                ownUnitsPromoted: [0, 25000, 0, 31000, 0, 27500],
+                ownUnitsOrganic:  [13000, 3500, 14000, 2800, 13200, 2900],
+                competitorUnits:  [68000, 58000, 64000, 51000, 62000, 55000],
+                ranking: [2, 1, 2, 1, 2, 1],
+                peakShare: '24,8%',
+                peakMonth: 'AGOSTO',
+                bestRank: '#1',
+                insight: 'Liderazgo en góndola física impulsado por cabeceras y tótems promocionales.'
+            },
+            mantecas: {
+                months: ['Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre'],
+                ownUnitsPromoted: [0, 0, 15500, 0, 18200, 0],
+                ownUnitsOrganic:  [5800, 6100, 1800, 6400, 1500, 6700],
+                competitorUnits:  [45000, 44000, 38000, 42000, 35000, 41000],
+                ranking: [4, 4, 2, 3, 1, 4],
+                peakShare: '18,2%',
+                peakMonth: 'SEPTIEMBRE',
+                bestRank: '#1',
+                insight: 'Pauta en frío e islas en hipermercados impulsó la posición #1 en Septiembre.'
+            },
+            licores: {
+                months: ['Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre'],
+                ownUnitsPromoted: [18500, 0, 20200, 0, 0, 23500],
+                ownUnitsOrganic:  [2200, 7100, 2500, 7800, 7400, 1800],
+                competitorUnits:  [52000, 56000, 48000, 54000, 58000, 45000],
+                ranking: [1, 3, 1, 3, 4, 1],
+                peakShare: '23,1%',
+                peakMonth: 'OCTUBRE',
+                bestRank: '#1',
+                insight: 'Excelente respuesta en punto de venta con tótems interactivos en góndolas de licores.'
+            },
+            vinos: {
+                months: ['Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre'],
+                ownUnitsPromoted: [0, 21000, 23500, 0, 25800, 0],
+                ownUnitsOrganic:  [8200, 2900, 3100, 8800, 2800, 9100],
+                competitorUnits:  [85000, 74000, 71000, 82000, 68000, 81000],
+                ranking: [3, 2, 1, 3, 1, 3],
+                peakShare: '20,5%',
+                peakMonth: 'SEPTIEMBRE',
+                bestRank: '#1',
+                insight: 'Las experiencias InStore en el sector de Vinos captaron el volumen de ventas orgánico.'
+            }
+        };
+
         let highFunnelChart, audiencePieChart, midFunnelChart, spaceTypeChart, supplierSectorChart, costPerfChart, lowFunnelChart, citrusVsTotalChart, tsTrafficChart, tsSalesChart;
-        let digitalCatCompChart; // NUEVO DIGITAL
+        let marketShareEvolChart; 
+        let digitalCatCompChart; 
         let instoreTemporalChart, instoreGenderChart, instoreAgeChart;
-        let instoreCatCompChart; // NUEVO INSTORE
-        let currentLowFunnelMetric = 'con-tasa';
+        let instoreCatCompChart; 
         let instoreChartsRendered = false;
 
-        // ==========================================
         // FUNCIONES DE CONTROL PRINCIPAL
-        // ==========================================
         function toggleEnvironment() {
             const isInstore = document.getElementById('env-toggle').checked;
             document.getElementById('env-digital-content').classList.toggle('hidden', isInstore);
@@ -507,8 +734,8 @@
             document.getElementById('env-instore-content').classList.toggle('hidden', !isInstore);
             document.getElementById('nav-instore').classList.toggle('hidden', !isInstore);
             
-            document.getElementById('lbl-instore').className = isInstore ? 'text-sm font-bold text-brand-900 transition-colors' : 'text-sm font-bold text-slate-400 transition-colors';
-            document.getElementById('lbl-digital').className = isInstore ? 'text-sm font-bold text-slate-400 transition-colors' : 'text-sm font-bold text-brand-900 transition-colors';
+            document.getElementById('lbl-instore').className = isInstore ? 'text-base font-bold text-brand-900 transition-colors' : 'text-base font-bold text-slate-400 transition-colors';
+            document.getElementById('lbl-digital').className = isInstore ? 'text-base font-bold text-slate-400 transition-colors' : 'text-base font-bold text-brand-900 transition-colors';
 
             if (isInstore) {
                 switchTab('instore-perf', 'instore');
@@ -534,38 +761,110 @@
             }
         }
 
-        // ==========================================
-        // INIT DASHBOARD (TODOS LOS GRÁFICOS)
-        // ==========================================
+        // INIT DASHBOARD
         function initDashboard() {
-            // -- DIGITAL CHARTS --
-            highFunnelChart = new Chart(document.getElementById('highFunnelChart').getContext('2d'), { type: 'line', data: { labels: ['S1', 'S2', 'S3', 'S4'], datasets: [{ label: 'Sesiones', data: [15, 24, 32, 28], borderColor: cMag, backgroundColor: 'transparent', tension: 0 }, { label: 'Usuarios', data: [11, 18, 24, 21], borderColor: cBlue, backgroundColor: cBlue, type: 'bar', barPercentage: 0.5 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } }, scales: { y: { grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } } } });
-            audiencePieChart = new Chart(document.getElementById('audiencePieChart').getContext('2d'), { type: 'doughnut', data: { labels: ['Smart Shoppers', 'Brand Loyalists', 'Impulsivos', 'Inactivos'], datasets: [{ data: [40, 25, 20, 15], backgroundColor: [cBlue, cMag, cDark, '#cbd5e1'], borderWidth: 2, borderColor: '#ffffff' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
-            midFunnelChart = new Chart(document.getElementById('midFunnelChart').getContext('2d'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Clicks', data: [], backgroundColor: cLight }, { label: 'Conv.', data: [], backgroundColor: cDark }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { display: false } } } } });
-            spaceTypeChart = new Chart(document.getElementById('spaceTypeChart').getContext('2d'), { type: 'doughnut', data: { labels: ['Banner Principal', 'Banner Secundario', 'Banner Categoría'], datasets: [{ data: [], backgroundColor: [cBlue, cLight, '#cbd5e1'], borderWidth: 2, borderColor: '#ffffff' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
-            supplierSectorChart = new Chart(document.getElementById('supplierSectorChart').getContext('2d'), { type: 'bar', data: { labels: ['Marca 1', 'Marca 2', 'Marca 3', 'Marca 4'], datasets: [{ label: 'Lácteos', data: [], backgroundColor: cBlue }, { label: 'Almacén', data: [], backgroundColor: cLight }, { label: 'Cuidado Personal', data: [], backgroundColor: cMag }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } } });
-            costPerfChart = new Chart(document.getElementById('costPerformanceChart').getContext('2d'), { type: 'bubble', data: { datasets: [{ label: 'Banner Home', data: [], backgroundColor: 'rgba(216, 0, 138, 0.6)', borderColor: cMag, borderWidth: 1.5 }, { label: 'Search', data: [], backgroundColor: 'rgba(0, 56, 255, 0.6)', borderColor: cBlue, borderWidth: 1.5 }, { label: 'Categoría', data: [], backgroundColor: 'rgba(15, 10, 46, 0.6)', borderColor: cDark, borderWidth: 1.5 }, { label: 'Checkout', data: [], backgroundColor: 'rgba(75, 152, 229, 0.6)', borderColor: cLight, borderWidth: 1.5 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { title: { display: true, text: 'Inversión ($)' } }, y: { title: { display: true, text: 'CTR (%)' } } } } });
-            lowFunnelChart = new Chart(document.getElementById('lowFunnelChart').getContext('2d'), { type: 'bar', data: { labels: [], datasets: [{ label: 'Ventas', data: [], backgroundColor: [cBlue, cMag, cDark, cLight], borderRadius: 6 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
-            citrusVsTotalChart = new Chart(document.getElementById('citrusVsTotalChart').getContext('2d'), { type: 'bar', data: { labels: ['Leche Entera', 'Yogur Frutilla', 'Queso Crema'], datasets: [{ label: 'Total DB', data: [65000, 48000, 21000], backgroundColor: '#cbd5e1' }, { label: 'Atribuido Citrus', data: [16200, 11200, 8100], backgroundColor: cBlue }] }, options: { responsive: true, maintainAspectRatio: false } });
-            tsTrafficChart = new Chart(document.getElementById('tsTrafficChart').getContext('2d'), { type: 'line', data: { labels: ['Abr', 'May', 'Jun'], datasets: [{ label: 'Sesiones', data: [68, 82, 99], borderColor: cMag, tension: 0 }, { label: 'Usuarios', data: [51, 64, 74], backgroundColor: cLight, type: 'bar' }] }, options: { responsive: true, maintainAspectRatio: false } });
-            tsSalesChart = new Chart(document.getElementById('tsSalesChart').getContext('2d'), { type: 'bar', data: { labels: ['Abr', 'May', 'Jun'], datasets: [{ label: 'Ventas ($)', data: [105, 128, 146], backgroundColor: cDark }] }, options: { responsive: true, maintainAspectRatio: false } });
-
-            // NUEVO DIGITAL: Comportamiento por Categoría
-            digitalCatCompChart = new Chart(document.getElementById('digitalCatCompChart').getContext('2d'), { 
-                type: 'bar', 
-                data: { 
-                    labels: ['Lácteos', 'Almacén', 'Cuidado Personal'], 
-                    datasets: [
-                        { label: 'Publicitados', data: [134000, 8820, 27300], backgroundColor: cMag }, 
-                        { label: 'Resto Orgánico', data: [320000, 150000, 110000], backgroundColor: cDark }
-                    ] 
-                }, 
-                options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } } 
+            highFunnelChart = new Chart(document.getElementById('highFunnelChart').getContext('2d'), { 
+                type: 'line', 
+                data: { labels: ['S1', 'S2', 'S3', 'S4'], datasets: [{ label: 'Sesiones', data: [15, 24, 32, 28], borderColor: cMag, backgroundColor: 'transparent', tension: 0 }, { label: 'Usuarios', data: [11, 18, 24, 21], borderColor: cBlue, backgroundColor: cBlue, type: 'bar', barPercentage: 0.5 }] }, 
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' }, ...defaultLightLabels }, scales: { y: { grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } } } 
             });
 
-            // RUN FILTERS TO POPULATE DATA
+            audiencePieChart = new Chart(document.getElementById('audiencePieChart').getContext('2d'), { 
+                type: 'doughnut', 
+                data: { labels: ['Buscador de Ofertas', 'Fidelizado con la Marca', 'Comprador Funcional', 'Comprador Ocasional'], datasets: [{ data: [40, 25, 20, 15], backgroundColor: [cBlue, cMag, cDark, '#cbd5e1'], borderWidth: 2, borderColor: '#ffffff' }] }, 
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { color: '#ffffff', font: { weight: 'bold', size: 10 }, formatter: (val) => val + '%' } } } 
+            });
+
+            midFunnelChart = new Chart(document.getElementById('midFunnelChart').getContext('2d'), { 
+                type: 'bar', 
+                data: { labels: [], datasets: [{ label: 'Clicks', data: [], backgroundColor: cLight }, { label: 'Conv.', data: [], backgroundColor: cDark }] }, 
+                options: { responsive: true, maintainAspectRatio: false, plugins: defaultLightLabels, scales: { x: { grid: { display: false } } } } 
+            });
+
+            spaceTypeChart = new Chart(document.getElementById('spaceTypeChart').getContext('2d'), { 
+                type: 'doughnut', 
+                data: { labels: ['Banner Principal', 'Banner Secundario', 'Banner Categoría'], datasets: [{ data: [], backgroundColor: [cBlue, cLight, '#cbd5e1'], borderWidth: 2, borderColor: '#ffffff' }] }, 
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, datalabels: { color: '#ffffff', font: { weight: 'bold', size: 10 }, formatter: (val) => val > 0 ? val : '' } } } 
+            });
+
+            supplierSectorChart = new Chart(document.getElementById('supplierSectorChart').getContext('2d'), { 
+                type: 'bar', 
+                data: { labels: ['Marca 1', 'Marca 2', 'Marca 3', 'Marca 4'], datasets: [{ label: 'Lácteos ($)', data: [], backgroundColor: cBlue }, { label: 'Almacén ($)', data: [], backgroundColor: cLight }, { label: 'Cuidado Personal ($)', data: [], backgroundColor: cMag }] }, 
+                options: { responsive: true, maintainAspectRatio: false, plugins: defaultLightLabels, scales: { x: { stacked: true }, y: { stacked: true } } } 
+            });
+
+            costPerfChart = new Chart(document.getElementById('costPerformanceChart').getContext('2d'), { 
+                type: 'bubble', 
+                data: { datasets: [{ label: 'Banner Home', data: [], backgroundColor: 'rgba(216, 0, 138, 0.6)', borderColor: cMag, borderWidth: 1.5 }, { label: 'Search', data: [], backgroundColor: 'rgba(0, 56, 255, 0.6)', borderColor: cBlue, borderWidth: 1.5 }, { label: 'Categoría', data: [], backgroundColor: 'rgba(15, 10, 46, 0.6)', borderColor: cDark, borderWidth: 1.5 }, { label: 'Checkout', data: [], backgroundColor: 'rgba(75, 152, 229, 0.6)', borderColor: cLight, borderWidth: 1.5 }] }, 
+                options: { responsive: true, maintainAspectRatio: false, plugins: { datalabels: { align: 'right', font: { size: 9 }, formatter: (v) => v.y + '%' } }, scales: { x: { title: { display: true, text: 'Inversión ($)' } }, y: { title: { display: true, text: 'CTR (%)' } } } } 
+            });
+
+            lowFunnelChart = new Chart(document.getElementById('lowFunnelChart').getContext('2d'), { 
+                type: 'bar', 
+                data: { labels: [], datasets: [{ label: 'Unidades Vendidas', data: [], backgroundColor: [cBlue, cMag, cDark, cLight], borderRadius: 6 }] }, 
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'end', color: '#0f0a2e', font: { weight: 'bold' }, formatter: (v) => v.toLocaleString() + ' U' } } } 
+            });
+            
+            marketShareEvolChart = new Chart(document.getElementById('marketShareEvolChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [
+                        { label: 'Unidades Pautadas', data: [], backgroundColor: cMag, stack: 'Stack 0', order: 2, borderRadius: 4 },
+                        { label: 'Unidades Orgánicas', data: [], backgroundColor: '#475569', stack: 'Stack 0', order: 2, borderRadius: 4 },
+                        { label: 'Competencia', data: [], backgroundColor: '#1e1b4b', stack: 'Stack 0', order: 2, borderRadius: 4 },
+                        { label: 'Posición Ranking', data: [], type: 'line', borderColor: cLight, backgroundColor: cLight, borderWidth: 2, borderDash: [4, 4], pointRadius: 6, pointHoverRadius: 8, order: 1, yAxisID: 'y1' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: {
+                            color: (context) => context.dataset.type === 'line' ? cLight : '#ffffff',
+                            font: { weight: 'bold', size: 9 },
+                            anchor: (context) => context.dataset.type === 'line' ? 'end' : 'center',
+                            align: (context) => context.dataset.type === 'line' ? 'top' : 'center',
+                            offset: (context) => context.dataset.type === 'line' ? 6 : 0,
+                            formatter: (val, context) => context.dataset.type === 'line' ? '#' + val : (val > 0 ? (val >= 1000 ? (val/1000).toFixed(1) + 'K' : val) : '')
+                        }
+                    },
+                    scales: {
+                        x: { stacked: true, grid: { display: false }, ticks: { color: '#cbd5e1', font: { weight: 'bold' } } },
+                        y: { stacked: true, grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
+                        y1: { position: 'right', reverse: true, min: 0.5, max: 5.5, grid: { display: false }, ticks: { color: cLight, font: { weight: 'bold' }, callback: (val) => '#' + val } }
+                    }
+                }
+            });
+
+            digitalCatCompChart = new Chart(document.getElementById('digitalCatCompChart').getContext('2d'), { 
+                type: 'bar', 
+                data: { labels: ['Lácteos', 'Almacén', 'Cuidado Personal'], datasets: [{ label: 'Publicitados', data: [74300, 6000, 3300], backgroundColor: cMag }, { label: 'Resto Orgánico', data: [180000, 95000, 72000], backgroundColor: cDark }] }, 
+                options: { responsive: true, maintainAspectRatio: false, plugins: defaultLightLabels, scales: { x: { stacked: true }, y: { stacked: true } } } 
+            });
+
+            citrusVsTotalChart = new Chart(document.getElementById('citrusVsTotalChart').getContext('2d'), { 
+                type: 'bar', 
+                data: { labels: ['Leche Entera', 'Yogur Frutilla', 'Queso Crema'], datasets: [{ label: 'Total DB (U)', data: [43300, 24000, 7000], backgroundColor: '#cbd5e1' }, { label: 'Atribuido Citrus (U)', data: [10800, 5600, 2700], backgroundColor: cBlue }] }, 
+                options: { responsive: true, maintainAspectRatio: false, plugins: defaultLightLabels } 
+            });
+
+            tsTrafficChart = new Chart(document.getElementById('tsTrafficChart').getContext('2d'), { 
+                type: 'line', 
+                data: { labels: ['Abr', 'May', 'Jun'], datasets: [{ label: 'Sesiones', data: [68, 82, 99], borderColor: cMag, tension: 0 }, { label: 'Usuarios', data: [51, 64, 74], backgroundColor: cLight, type: 'bar' }] }, 
+                options: { responsive: true, maintainAspectRatio: false, plugins: defaultLightLabels } 
+            });
+
+            tsSalesChart = new Chart(document.getElementById('tsSalesChart').getContext('2d'), { 
+                type: 'bar', 
+                data: { labels: ['Abr', 'May', 'Jun'], datasets: [{ label: 'Unidades Vendidas (U)', data: [68000, 82000, 95000], backgroundColor: cDark }] }, 
+                options: { responsive: true, maintainAspectRatio: false, plugins: defaultLightLabels } 
+            });
+
             applyMidFunnelFilters();
-            switchLowFunnelMetric('con-tasa');
+            updateLowFunnelView();
+            switchMarketShareCategory('total');
             updateTimeSeriesCharts();
             updateCampaignFunnel('leche');
             switchTab('high', 'digital');
@@ -573,23 +872,107 @@
 
         function initInstoreCharts() {
             if (instoreChartsRendered) return;
-            instoreTemporalChart = new Chart(document.getElementById('instoreTemporalChart').getContext('2d'), { type: 'bar', data: { labels: ['S1', 'S2', 'S3', 'S4'], datasets: [{ label: 'Venta Test', data: [], backgroundColor: cBlue, order: 2 }, { label: 'Venta Control', data: [], backgroundColor: cMag, order: 3 }, { label: 'YoY', data: [], borderColor: cDark, type: 'line', tension: 0, borderDash: [5,5], order: 1 }] }, options: { responsive: true, maintainAspectRatio: false } });
-            instoreGenderChart = new Chart(document.getElementById('instoreGenderChart').getContext('2d'), { type: 'doughnut', data: { labels: ['Fem', 'Masc'], datasets: [{ data: [65, 35], backgroundColor: [cMag, cDark], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false } } } });
-            instoreAgeChart = new Chart(document.getElementById('instoreAgeChart').getContext('2d'), { type: 'bar', data: { labels: ['18-24', '25-34', '35-44', '45+'], datasets: [{ data: [12, 38, 25, 25], backgroundColor: cBlue }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false } } } });
+            instoreTemporalChart = new Chart(document.getElementById('instoreTemporalChart').getContext('2d'), { 
+                type: 'bar', 
+                data: { labels: ['S1', 'S2', 'S3', 'S4'], datasets: [{ label: 'Unidades Test', data: [], backgroundColor: cBlue, order: 2 }, { label: 'Unidades Control', data: [], backgroundColor: cMag, order: 3 }, { label: 'YoY', data: [], borderColor: cDark, type: 'line', tension: 0, borderDash: [5,5], order: 1 }] }, 
+                options: { responsive: true, maintainAspectRatio: false, plugins: defaultLightLabels } 
+            });
+
+            instoreGenderChart = new Chart(document.getElementById('instoreGenderChart').getContext('2d'), { 
+                type: 'doughnut', 
+                data: { labels: ['Fem', 'Masc'], datasets: [{ data: [65, 35], backgroundColor: [cMag, cDark], borderWidth: 0 }] }, 
+                options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false }, datalabels: { color: '#ffffff', font: { weight: 'bold', size: 10 }, formatter: (val) => val + '%' } } } 
+            });
+
+            instoreAgeChart = new Chart(document.getElementById('instoreAgeChart').getContext('2d'), { 
+                type: 'bar', 
+                data: { labels: ['18-24', '25-34', '35-44', '45+'], datasets: [{ data: [12, 38, 25, 25], backgroundColor: cBlue }] }, 
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'end', color: '#1e293b', font: { weight: 'bold' }, formatter: (val) => val + '%' } }, scales: { x: { display: false } } } 
+            });
             
-            // NUEVO INSTORE: Comportamiento por Categoría
             instoreCatCompChart = new Chart(document.getElementById('instoreCatCompChart').getContext('2d'), { 
                 type: 'bar', 
-                data: { labels: [], datasets: [{ label: 'Publicitados', data: [], backgroundColor: cBlue }, { label: 'Resto Orgánico', data: [], backgroundColor: cLight }] }, 
-                options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } } 
+                data: { 
+                    labels: [], 
+                    datasets: [
+                        { label: 'Unidades Pautadas', data: [], backgroundColor: cMag, stack: 'Stack 0', order: 2, borderRadius: 4 },
+                        { label: 'Unidades Orgánicas', data: [], backgroundColor: '#475569', stack: 'Stack 0', order: 2, borderRadius: 4 },
+                        { label: 'Competencia', data: [], backgroundColor: '#1e1b4b', stack: 'Stack 0', order: 2, borderRadius: 4 },
+                        { label: 'Posición Ranking', data: [], type: 'line', borderColor: cLight, backgroundColor: cLight, borderWidth: 2, borderDash: [4, 4], pointRadius: 6, pointHoverRadius: 8, order: 1, yAxisID: 'y1' }
+                    ] 
+                }, 
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: {
+                            color: (context) => context.dataset.type === 'line' ? cLight : '#ffffff',
+                            font: { weight: 'bold', size: 9 },
+                            anchor: (context) => context.dataset.type === 'line' ? 'end' : 'center',
+                            align: (context) => context.dataset.type === 'line' ? 'top' : 'center',
+                            offset: (context) => context.dataset.type === 'line' ? 6 : 0,
+                            formatter: (val, context) => context.dataset.type === 'line' ? '#' + val : (val > 0 ? (val >= 1000 ? (val/1000).toFixed(1) + 'K' : val) : '')
+                        }
+                    },
+                    scales: { 
+                        x: { stacked: true, grid: { display: false }, ticks: { color: '#cbd5e1', font: { weight: 'bold' } } }, 
+                        y: { stacked: true, grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
+                        y1: { position: 'right', reverse: true, min: 0.5, max: 5.5, grid: { display: false }, ticks: { color: cLight, font: { weight: 'bold' }, callback: (val) => '#' + val } }
+                    } 
+                } 
             });
 
             instoreChartsRendered = true;
+            switchInstoreMarketShareCategory('total');
         }
 
-        // ==========================================
         // FUNCIONES FILTROS DIGITAL
-        // ==========================================
+        function switchMarketShareCategory(catKey) {
+            const data = marketShareCategoryData[catKey]; if (!data) return;
+
+            document.querySelectorAll('.ms-cat-btn').forEach(btn => {
+                btn.className = "ms-cat-btn px-4 py-1.5 rounded-full text-xs font-medium bg-brand-900/80 text-slate-300 border border-brand-700 hover:text-white transition-all";
+            });
+            const activeBtn = document.getElementById(`btn-ms-${catKey}`);
+            if (activeBtn) activeBtn.className = "ms-cat-btn px-4 py-1.5 rounded-full text-xs font-bold bg-brand-500 text-white shadow transition-all";
+
+            document.getElementById('ms-kpi-peak-val').innerText = data.peakShare;
+            document.getElementById('ms-kpi-peak-lbl').innerText = `PICO MÁXIMO SHARE (${data.peakMonth})`;
+            document.getElementById('ms-kpi-rank-val').innerText = data.bestRank;
+            document.getElementById('ms-kpi-insight').innerText = data.insight;
+
+            marketShareEvolChart.data.labels = data.months;
+            marketShareEvolChart.data.datasets[0].data = data.ownUnitsPromoted;
+            marketShareEvolChart.data.datasets[1].data = data.ownUnitsOrganic;
+            marketShareEvolChart.data.datasets[2].data = data.competitorUnits;
+            marketShareEvolChart.data.datasets[3].data = data.ranking;
+            marketShareEvolChart.update();
+        }
+
+        function switchInstoreMarketShareCategory(catKey) {
+            if(!instoreChartsRendered) return;
+            const data = instoreMarketShareCategoryData[catKey]; if (!data) return;
+
+            document.querySelectorAll('.ins-ms-cat-btn').forEach(btn => {
+                btn.className = "ins-ms-cat-btn px-4 py-1.5 rounded-full text-xs font-medium bg-brand-900/80 text-slate-300 border border-brand-700 hover:text-white transition-all";
+            });
+            const activeBtn = document.getElementById(`btn-ins-ms-${catKey}`);
+            if (activeBtn) activeBtn.className = "ins-ms-cat-btn px-4 py-1.5 rounded-full text-xs font-bold bg-brand-500 text-white shadow transition-all";
+
+            document.getElementById('ins-ms-kpi-peak-val').innerText = data.peakShare;
+            document.getElementById('ins-ms-kpi-peak-lbl').innerText = `PICO MÁXIMO SHARE (${data.peakMonth})`;
+            document.getElementById('ins-ms-kpi-rank-val').innerText = data.bestRank;
+            document.getElementById('ins-ms-kpi-insight').innerText = data.insight;
+
+            instoreCatCompChart.data.labels = data.months;
+            instoreCatCompChart.data.datasets[0].data = data.ownUnitsPromoted;
+            instoreCatCompChart.data.datasets[1].data = data.ownUnitsOrganic;
+            instoreCatCompChart.data.datasets[2].data = data.competitorUnits;
+            instoreCatCompChart.data.datasets[3].data = data.ranking;
+            instoreCatCompChart.update();
+        }
+
         function applyMidFunnelFilters() {
             const compVal = document.getElementById('mid-filter-company').value;
             const rubroVal = document.getElementById('mid-filter-rubro').value;
@@ -651,48 +1034,28 @@
             const campaign = document.getElementById('low-filter-campaign').value;
             const groupBy = document.getElementById('low-group-by').value;
             let labels = [], chartData = [];
-            let p = currentLowFunnelMetric === 'unidades' ? '' : '$', s = currentLowFunnelMetric === 'unidades' ? ' U' : '';
 
-            // 1. UPDATE BARRAS HORIZONTALES
             if (groupBy === 'ean') {
                 labels = ['Leche Entera', 'Yogur Frutilla', 'Queso Crema'];
-                chartData = currentLowFunnelMetric === 'con-tasa' ? [65000, 48000, 21000] : (currentLowFunnelMetric === 'sin-tasa' ? [53719, 39696, 17367] : [43300, 24000, 7000]);
+                chartData = [43300, 24000, 7000];
                 if (campaign === 'leche') chartData = [chartData[0], 0, 0]; else if (campaign === 'yogur') chartData = [0, chartData[1], 0]; else if (campaign === 'queso') chartData = [0, 0, chartData[2]]; else if (campaign !== 'todas') chartData = [0,0,0];
             } else if (groupBy === 'categoria') {
                 labels = ['Lácteos', 'Almacén / Bebidas', 'Cuidado Personal'];
-                chartData = currentLowFunnelMetric === 'con-tasa' ? [134000, 8820, 27300] : (currentLowFunnelMetric === 'sin-tasa' ? [110782, 7289, 22559] : [74300, 6000, 3300]);
+                chartData = [74300, 6000, 3300];
                 if (campaign === 'leche' || campaign === 'yogur' || campaign === 'queso') chartData = [chartData[0], 0, 0]; else if (campaign === 'cafe') chartData = [0, chartData[1], 0]; else if (campaign === 'shampoo' || campaign === 'promo') chartData = [0, 0, chartData[2]];
             } else if (groupBy === 'proveedor') {
                 labels = ['Marca 1', 'Marca 2', 'Marca 3', 'Marca 4'];
-                chartData = currentLowFunnelMetric === 'con-tasa' ? [21420, 8820, 134000, 5880] : (currentLowFunnelMetric === 'sin-tasa' ? [17701, 7289, 110782, 4856] : [13000, 6000, 74300, 3300]);
+                chartData = [13000, 6000, 74300, 3300];
                 if (campaign === 'leche' || campaign === 'yogur' || campaign === 'queso') chartData = [0, 0, chartData[2], 0]; else if (campaign === 'promo') chartData = [chartData[0], 0, 0, 0]; else if (campaign === 'cafe') chartData = [0, chartData[1], 0, 0]; else if (campaign === 'shampoo') chartData = [0, 0, 0, chartData[3]];
             }
             lowFunnelChart.data.labels = labels; lowFunnelChart.data.datasets[0].data = chartData; lowFunnelChart.update();
             
             let sum = chartData.reduce((a,b) => a+b, 0);
-            document.getElementById('low-chart-total-legend').innerHTML = `<div class="flex items-center justify-between bg-slate-50 border p-3 rounded text-xs"><span class="font-bold">TOTAL:</span><span class="font-mono text-brand-900 font-bold">${p}${sum.toLocaleString()}${s}</span></div>`;
+            document.getElementById('low-chart-total-legend').innerHTML = `<div class="flex items-center justify-between bg-slate-50 border p-3 rounded text-xs"><span class="font-bold">TOTAL UNIDADES:</span><span class="font-mono text-brand-900 font-bold">${sum.toLocaleString()} U</span></div>`;
 
-            // 2. UPDATE GRAFICO SHARE DE CATEGORIA DIGITAL
-            let catLabels = ['Lácteos', 'Almacén', 'Cuidado Personal'];
-            let catPub = [134000, 8820, 27300];
-            let catOrg = [320000, 150000, 110000];
-
-            if (campaign === 'leche' || campaign === 'yogur' || campaign === 'queso') {
-                catLabels = ['Lácteos']; catPub = [134000]; catOrg = [320000];
-            } else if (campaign === 'cafe') {
-                catLabels = ['Almacén']; catPub = [8820]; catOrg = [150000];
-            } else if (campaign === 'promo' || campaign === 'shampoo') {
-                catLabels = ['Cuidado Personal']; catPub = [27300]; catOrg = [110000];
-            }
-            digitalCatCompChart.data.labels = catLabels;
-            digitalCatCompChart.data.datasets[0].data = catPub;
-            digitalCatCompChart.data.datasets[1].data = catOrg;
-            digitalCatCompChart.update();
-
-            // 3. UPDATE CITRUS BAR CHART
             let cLabels = ['Leche Entera', 'Yogur Frutilla', 'Queso Crema'];
-            let cTotal = [65000, 48000, 21000];
-            let cCitrus = [16200, 11200, 8100];
+            let cTotal = [43300, 24000, 7000];
+            let cCitrus = [10800, 5600, 2700];
             if (campaign === 'leche') { cLabels = [cLabels[0]]; cTotal = [cTotal[0]]; cCitrus = [cCitrus[0]]; }
             else if (campaign === 'yogur') { cLabels = [cLabels[1]]; cTotal = [cTotal[1]]; cCitrus = [cCitrus[1]]; }
             else if (campaign === 'queso') { cLabels = [cLabels[2]]; cTotal = [cTotal[2]]; cCitrus = [cCitrus[2]]; }
@@ -703,14 +1066,13 @@
             citrusVsTotalChart.data.datasets[1].data = cCitrus;
             citrusVsTotalChart.update();
 
-            // 4. UPDATE TABLE ROWS
             const tbody = document.getElementById('temporal-sales-tbody'); tbody.innerHTML = '';
-            temporalSalesData[currentLowFunnelMetric].forEach((r, index) => {
+            temporalSalesData.forEach((r, index) => {
                 let show = true;
                 if (campaign === 'leche' && index !== 0) show = false;
                 if (campaign === 'yogur' && index !== 1) show = false;
                 if (campaign === 'queso' && index !== 2) show = false;
-                if (['promo', 'cafe', 'shampoo'].includes(campaign)) show = false; // Mock data does not have these in table
+                if (['promo', 'cafe', 'shampoo'].includes(campaign)) show = false;
                 
                 if(show) {
                     const tr = document.createElement('tr');
@@ -718,14 +1080,6 @@
                     tbody.appendChild(tr);
                 }
             });
-        }
-
-        function switchLowFunnelMetric(metricKey) {
-            currentLowFunnelMetric = metricKey;
-            document.querySelectorAll('#low-funnel-metric-tabs button').forEach(btn => btn.className = "px-3 py-1.5 rounded text-xs font-medium text-slate-600 transition-all");
-            document.getElementById(`metric-btn-${metricKey}`).className = "px-3 py-1.5 rounded text-xs font-semibold bg-white text-brand-900 shadow-sm transition-all";
-            document.getElementById('th-current-val').innerText = metricKey === 'unidades' ? 'Volumen' : 'Venta Actual';
-            updateLowFunnelView(); // Will re-render table with correct campaign filters
         }
 
         function updateCampaignFunnel(campaignKey) {
@@ -742,7 +1096,7 @@
             let labels = d === '4weeks' ? ['S1', 'S2', 'S3', 'S4'] : ['Abr', 'May', 'Jun'];
             let sessionsData = d === '4weeks' ? [15, 24, 32, 28] : [68, 82, 99]; 
             let activeUsersData = d === '4weeks' ? [11, 18, 24, 21] : [51, 64, 74]; 
-            let salesDBData = d === '4weeks' ? [22, 35, 48, 41] : [105, 128, 146];
+            let salesDBData = d === '4weeks' ? [18000, 24000, 31000, 22000] : [68000, 82000, 95000];
             
             let factor = 1.0;
             if (category === 'lacteos') factor *= 0.55; 
@@ -761,9 +1115,7 @@
             tsSalesChart.update();
         }
 
-        // ==========================================
         // FUNCIONES FILTROS INSTORE
-        // ==========================================
         function applyInstoreFilters() {
             if(!instoreChartsRendered) return;
             const camp = document.getElementById('instore-filter-campaign').value;
@@ -771,25 +1123,26 @@
             const fmt = document.getElementById('instore-filter-format').value;
             const reg = document.getElementById('instore-filter-region').value;
 
-            // Fictional multiplier to simulate data shifts on region/format
             let mCamp = isMarca6 ? 0.6 : 1.0;
             let mReg = reg === 'nacional' ? 1.0 : (reg === 'amba' ? 0.6 : 0.4);
             let mForm = fmt === 'todos' ? 1.0 : (fmt === 'hiper' ? 0.41 : (fmt === 'market' ? 0.27 : (fmt === 'express' ? 0.20 : 0.12)));
-            let totalMult = mCamp * mReg * mForm;
 
-            // Update KPIs
-            document.getElementById('instore-compliance-pct').innerText = isMarca6 ? "92.1%" : "88.5%";
             document.getElementById('instore-uplift-pct').innerText = isMarca6 ? "+10.5%" : "+14.2%";
-            document.getElementById('instore-sales-test').innerText = isMarca6 ? `$${(28.4 * mReg * mForm).toFixed(1)}M` : `$${(45.2 * mReg * mForm).toFixed(1)}M`;
-            document.getElementById('instore-sales-control').innerText = isMarca6 ? `vs $${(25.7 * mReg * mForm).toFixed(1)}M` : `vs $${(39.5 * mReg * mForm).toFixed(1)}M`;
+            document.getElementById('instore-sales-test').innerText = isMarca6 ? `${(28.4 * mReg * mForm).toFixed(1)}K U` : `${(45.2 * mReg * mForm).toFixed(1)}K U`;
+            document.getElementById('instore-sales-control').innerText = isMarca6 ? `vs ${(25.7 * mReg * mForm).toFixed(1)}K U Control` : `vs ${(39.5 * mReg * mForm).toFixed(1)}K U Control`;
             
-            // Update Maps
-            document.getElementById('map-amba-val').innerText = isMarca6 ? "90%" : "85%"; document.getElementById('map-amba-bar').style.width = isMarca6 ? "90%" : "85%";
-            document.getElementById('map-centro-val').innerText = isMarca6 ? "70%" : "65%"; document.getElementById('map-centro-bar').style.width = isMarca6 ? "70%" : "65%";
-            document.getElementById('map-cuyo-val').innerText = isMarca6 ? "45%" : "40%"; document.getElementById('map-cuyo-bar').style.width = isMarca6 ? "45%" : "40%";
-            document.getElementById('map-noa-val').innerText = isMarca6 ? "30%" : "25%"; document.getElementById('map-noa-bar').style.width = isMarca6 ? "30%" : "25%";
+            document.getElementById('map-noa-val').innerText = isMarca6 ? "+24.0%" : "+28.5%"; 
+            document.getElementById('map-noa-bar').style.width = isMarca6 ? "75%" : "85%";
+            
+            document.getElementById('map-cuyo-val').innerText = isMarca6 ? "+18.5%" : "+22.1%"; 
+            document.getElementById('map-cuyo-bar').style.width = isMarca6 ? "55%" : "65%";
+            
+            document.getElementById('map-centro-val').innerText = isMarca6 ? "+11.0%" : "+14.3%"; 
+            document.getElementById('map-centro-bar').style.width = isMarca6 ? "35%" : "42%";
+            
+            document.getElementById('map-amba-val').innerText = isMarca6 ? "+6.5%" : "+8.2%"; 
+            document.getElementById('map-amba-bar').style.width = isMarca6 ? "20%" : "25%";
 
-            // Update Temporal Chart
             let dTest = isMarca6 ? [9, 10, 8, 11] : [12.5, 14.2, 11.0, 13.8];
             let dControl = isMarca6 ? [8.5, 9, 7.5, 9] : [11.0, 12.1, 10.5, 11.2];
             let dYoY = isMarca6 ? [7, 8.5, 7, 8] : [8, 9, 7.5, 8.5];
@@ -798,28 +1151,15 @@
             instoreTemporalChart.data.datasets[1].data = dControl.map(v => Number((v*mReg*mForm).toFixed(1)));
             instoreTemporalChart.data.datasets[2].data = dYoY.map(v => Number((v*mReg*mForm).toFixed(1)));
             instoreTemporalChart.update();
-            
-            // Update Category Comparison Chart (InStore)
-            if(isMarca6) {
-                instoreCatCompChart.data.labels = ['Cuid. Personal (S1)', 'Cuid. Personal (S2)', 'Cuid. Personal (S3)', 'Cuid. Personal (S4)'];
-                instoreCatCompChart.data.datasets[0].data = [15000*totalMult, 18000*totalMult, 14000*totalMult, 20000*totalMult];
-                instoreCatCompChart.data.datasets[1].data = [45000*totalMult, 42000*totalMult, 48000*totalMult, 40000*totalMult];
-            } else {
-                instoreCatCompChart.data.labels = ['Bebidas (S1)', 'Bebidas (S2)', 'Bebidas (S3)', 'Bebidas (S4)'];
-                instoreCatCompChart.data.datasets[0].data = [25000*totalMult, 28000*totalMult, 22000*totalMult, 30000*totalMult];
-                instoreCatCompChart.data.datasets[1].data = [80000*totalMult, 75000*totalMult, 85000*totalMult, 70000*totalMult];
-            }
-            instoreCatCompChart.update();
 
-            // Update Table
             const tbody = document.getElementById('instore-table-body'); tbody.innerHTML = '';
             let filteredFormats = fmt === 'todos' ? instoreFormatsData : instoreFormatsData.filter(f => f.id === fmt);
             filteredFormats.forEach(r => {
                 let up = isMarca6 ? (r.up * 0.8).toFixed(1) : r.up.toFixed(1);
-                let rT = (r.baseT * mCamp * mReg).toFixed(1);
-                let rC = (r.baseC * mCamp * mReg).toFixed(1);
+                let rT = (r.baseT * mCamp * mReg * 1000).toFixed(0);
+                let rC = (r.baseC * mCamp * mReg * 1000).toFixed(0);
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td class="py-3 text-xs font-bold">${r.name}</td><td class="py-3 text-right font-mono font-bold">$${rT}M</td><td class="py-3 text-right font-mono text-slate-500">$${rC}M</td><td class="py-3 text-right font-mono font-bold text-brand-magenta">+${up}%</td><td class="py-3 text-right font-mono ${r.pop>0?'text-green-600':'text-red-500'}">${r.pop}%</td><td class="py-3 text-right font-mono ${r.yoy>0?'text-green-600':'text-red-500'}">${r.yoy}%</td>`;
+                tr.innerHTML = `<td class="py-3 text-xs font-bold">${r.name}</td><td class="py-3 text-right font-mono font-bold">${Number(rT).toLocaleString()} U</td><td class="py-3 text-right font-mono text-slate-500">${Number(rC).toLocaleString()} U</td><td class="py-3 text-right font-mono font-bold text-brand-magenta">+${up}%</td><td class="py-3 text-right font-mono ${r.pop>0?'text-green-600':'text-red-500'}">${r.pop}%</td><td class="py-3 text-right font-mono ${r.yoy>0?'text-green-600':'text-red-500'}">${r.yoy}%</td>`;
                 tbody.appendChild(tr);
             });
         }
@@ -836,9 +1176,21 @@
             document.getElementById('instore-gender-f').innerText = isMarca6 ? "F: 20%" : "F: 65%";
             document.getElementById('instore-gender-m').innerText = isMarca6 ? "M: 80%" : "M: 35%";
             
-            document.getElementById('instore-ticket-avg').innerText = "$" + Math.round((isMarca6 ? 18500 : 24350) * dateMult).toLocaleString();
+            document.getElementById('instore-ticket-avg').innerText = ((isMarca6 ? 14.5 : 18.5) * dateMult).toFixed(1) + " U";
             
             instoreAgeChart.data.datasets[0].data = isMarca6 ? [15, 45, 20, 20] : [12, 38, 25, 25];
+
+            document.getElementById('prov-bsas').innerText = isMarca6 ? "44.0%" : "52.0%";
+            document.getElementById('prov-bsas-bar').style.width = isMarca6 ? "44%" : "52%";
+
+            document.getElementById('prov-cba').innerText = isMarca6 ? "22.5%" : "18.5%";
+            document.getElementById('prov-cba-bar').style.width = isMarca6 ? "22.5%" : "18.5%";
+
+            document.getElementById('prov-sfe').innerText = isMarca6 ? "16.0%" : "14.2%";
+            document.getElementById('prov-sfe-bar').style.width = isMarca6 ? "16%" : "14.2%";
+
+            document.getElementById('prov-mdz').innerText = isMarca6 ? "10.5%" : "8.3%";
+            document.getElementById('prov-mdz-bar').style.width = isMarca6 ? "10.5%" : "8.3%";
 
             document.getElementById('instore-basket-body').innerHTML = isMarca6 
                 ? `<tr><td class="py-3 font-bold text-brand-900">Espuma Afeitar</td><td class="py-3 text-right font-bold text-brand-magenta">55.2%</td></tr><tr><td class="py-3 font-bold text-brand-900">Shampoo Men</td><td class="py-3 text-right font-bold text-brand-magenta">32.4%</td></tr>`
